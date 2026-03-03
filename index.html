@@ -1,0 +1,2233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backend com Java/Spring — Aluno Online | UNIESP</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Nunito:wght@400;600;700;800;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a12;
+  --surface:#12121e;
+  --surface2:#1a1a2e;
+  --surface3:#222240;
+  --accent:#6c63ff;
+  --accent2:#ff6b6b;
+  --accent3:#4ecdc4;
+  --accent4:#45b7d1;
+  --accent5:#f7b731;
+  --accent6:#a78bfa;
+  --accent7:#06d6a0;
+  --java:#f89820;
+  --spring:#6db33f;
+  --text:#eef0f8;
+  --text-dim:#8892b0;
+  --code-bg:#0d0d1a;
+  --glow-accent:rgba(108,99,255,0.15);
+  --glow-spring:rgba(109,179,63,0.15);
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+
+/* === ANIMATED BACKGROUND === */
+.bg-grid{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(108,99,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,99,255,0.03) 1px,transparent 1px);background-size:50px 50px}
+.bg-orbs{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-orbs .orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:0.08;animation:orbFloat 25s ease-in-out infinite}
+.bg-orbs .orb:nth-child(1){width:600px;height:600px;background:var(--accent);top:-150px;left:-150px;animation-delay:0s}
+.bg-orbs .orb:nth-child(2){width:500px;height:500px;background:var(--spring);bottom:-150px;right:-150px;animation-delay:-8s}
+.bg-orbs .orb:nth-child(3){width:400px;height:400px;background:var(--accent2);top:40%;left:60%;animation-delay:-16s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(60px,-40px) scale(1.1)}66%{transform:translate(-40px,60px) scale(0.9)}}
+
+/* === PROGRESS BAR === */
+.progress-track{position:fixed;top:0;left:0;width:100%;height:4px;z-index:200;background:rgba(255,255,255,0.03)}
+.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--spring),var(--accent4));transition:width 0.3s;border-radius:0 2px 2px 0;box-shadow:0 0 20px var(--accent)}
+
+/* === CONTAINER === */
+.container{max-width:960px;margin:0 auto;padding:20px;position:relative;z-index:1}
+
+/* === NAV SIDEBAR === */
+.sidebar-nav{position:fixed;left:0;top:0;width:280px;height:100vh;background:var(--surface);border-right:1px solid rgba(108,99,255,0.1);z-index:100;transform:translateX(-100%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);overflow-y:auto;padding:24px 0}
+.sidebar-nav.open{transform:translateX(0)}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.sidebar-overlay.open{opacity:1;pointer-events:auto}
+.sidebar-header{padding:0 24px 20px;border-bottom:1px solid rgba(255,255,255,0.05);margin-bottom:12px}
+.sidebar-header h3{font-size:1rem;color:var(--accent);font-weight:800;display:flex;align-items:center;gap:8px}
+.sidebar-group{padding:8px 16px}
+.sidebar-group-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);padding:8px;font-weight:700}
+.sidebar-link{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;color:var(--text-dim);text-decoration:none;font-size:0.85rem;font-weight:600;transition:all 0.2s;cursor:pointer}
+.sidebar-link:hover,.sidebar-link.active{background:rgba(108,99,255,0.1);color:var(--text)}
+.sidebar-link .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sidebar-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-dim);font-size:1.4rem;cursor:pointer;padding:4px 8px;border-radius:8px;transition:all 0.2s}
+.sidebar-close:hover{color:var(--text);background:rgba(255,255,255,0.05)}
+
+.menu-toggle{position:fixed;top:16px;left:16px;z-index:98;background:var(--surface2);border:1px solid rgba(108,99,255,0.2);color:var(--text);width:44px;height:44px;border-radius:12px;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+.menu-toggle:hover{background:var(--accent);border-color:var(--accent)}
+
+/* === HERO === */
+.hero{text-align:center;padding:100px 20px 70px;position:relative}
+.hero-icons{font-size:3.5rem;display:flex;justify-content:center;gap:16px;margin-bottom:24px;animation:fadeSlideDown 0.8s ease both}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent),var(--accent6));color:white;font-weight:800;font-size:0.8rem;padding:6px 20px;border-radius:50px;text-transform:uppercase;letter-spacing:2px;margin-bottom:24px;animation:fadeSlideDown 0.8s ease 0.1s both}
+.hero h1{font-size:clamp(2.2rem,5.5vw,3.8rem);font-weight:900;background:linear-gradient(135deg,var(--text),var(--accent4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.15;margin-bottom:16px;animation:fadeSlideDown 0.8s ease 0.2s both}
+.hero .subtitle{font-size:1.15rem;color:var(--text-dim);max-width:650px;margin:0 auto 28px;animation:fadeSlideDown 0.8s ease 0.35s both}
+.hero-stack{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;animation:fadeSlideDown 0.8s ease 0.5s both}
+.stack-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:50px;font-size:0.8rem;font-weight:700;border:1px solid rgba(255,255,255,0.08);background:var(--surface2)}
+.stack-chip.java{border-color:rgba(248,152,32,0.3);color:var(--java)}
+.stack-chip.spring{border-color:rgba(109,179,63,0.3);color:var(--spring)}
+.stack-chip.pg{border-color:rgba(69,183,209,0.3);color:var(--accent4)}
+.stack-chip.swagger{border-color:rgba(76,175,80,0.3);color:#85ea2d}
+
+@keyframes fadeSlideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.5)}}
+@keyframes typing{from{width:0}to{width:100%}}
+@keyframes blink{50%{border-color:transparent}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* === CHAPTER DIVIDER === */
+.chapter-divider{text-align:center;padding:60px 20px 30px;position:relative}
+.chapter-divider::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:60%;height:1px;background:linear-gradient(90deg,transparent,rgba(108,99,255,0.3),transparent)}
+.chapter-icon{font-size:3rem;display:block;margin-bottom:12px;animation:bounce 2s ease-in-out infinite}
+.chapter-number{display:inline-block;background:linear-gradient(135deg,var(--accent),var(--accent6));color:white;font-weight:900;font-size:0.75rem;padding:4px 16px;border-radius:50px;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+.chapter-divider h2{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;margin-bottom:8px}
+.chapter-divider h2.grad-aluno{background:linear-gradient(135deg,var(--accent2),var(--accent5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.chapter-divider h2.grad-prof{background:linear-gradient(135deg,var(--accent4),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.chapter-divider h2.grad-disc{background:linear-gradient(135deg,var(--accent5),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.chapter-divider h2.grad-mat{background:linear-gradient(135deg,var(--accent6),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.chapter-divider h2.grad-dto{background:linear-gradient(135deg,var(--accent3),var(--accent4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.chapter-subtitle{color:var(--text-dim);font-size:1rem;max-width:500px;margin:0 auto}
+
+/* === SECTION STEP === */
+.step-section{margin:30px 0;opacity:0;transform:translateY(40px);transition:opacity 0.7s ease,transform 0.7s ease}
+.step-section.visible{opacity:1;transform:translateY(0)}
+.step-header{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.step-number{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.3rem;color:var(--bg);flex-shrink:0;position:relative}
+.step-number::after{content:'';position:absolute;inset:-3px;border-radius:17px;background:inherit;opacity:0.25;z-index:-1}
+.sn-red{background:var(--accent2)}
+.sn-blue{background:var(--accent4)}
+.sn-green{background:var(--accent3)}
+.sn-yellow{background:var(--accent5)}
+.sn-purple{background:var(--accent6)}
+.sn-main{background:var(--accent)}
+.step-title{font-size:1.45rem;font-weight:800}
+
+/* === CARDS === */
+.card{background:var(--surface);border:1px solid rgba(255,255,255,0.05);border-radius:20px;padding:32px;margin-bottom:24px;position:relative;overflow:hidden;transition:border-color 0.3s}
+.card:hover{border-color:rgba(108,99,255,0.15)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity 0.3s}
+.card:hover::before{opacity:1}
+
+/* === CONCEPT BOX === */
+.concept{background:var(--surface2);border-radius:16px;padding:24px;margin:16px 0;border-left:4px solid var(--accent5)}
+.concept-title{font-family:'Caveat',cursive;font-size:1.4rem;color:var(--accent5);margin-bottom:8px}
+.concept p{color:var(--text-dim);font-size:0.95rem}
+
+/* === ANALOGY === */
+.analogy{background:linear-gradient(135deg,rgba(167,139,250,0.06),rgba(69,183,209,0.06));border:1px solid rgba(167,139,250,0.15);border-radius:16px;padding:24px;margin:16px 0;position:relative}
+.analogy::before{content:'💡';font-size:1.6rem;position:absolute;top:-14px;left:20px}
+.analogy-title{font-family:'Caveat',cursive;font-size:1.3rem;color:var(--accent6);margin-bottom:8px}
+
+/* === TIP / WARNING === */
+.tip{background:rgba(78,205,196,0.06);border:1px solid rgba(78,205,196,0.15);border-radius:14px;padding:20px 24px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.tip-icon{font-size:1.3rem;flex-shrink:0;margin-top:2px}
+.tip-content{color:var(--text-dim);font-size:0.92rem}
+.tip-content strong{color:var(--accent3)}
+
+.warning{background:rgba(247,183,49,0.06);border:1px solid rgba(247,183,49,0.15);border-radius:14px;padding:20px 24px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;flex-shrink:0;margin-top:2px}
+
+/* === CODE BLOCKS === */
+.code-block{background:var(--code-bg);border-radius:14px;margin:16px 0;overflow:hidden;border:1px solid rgba(255,255,255,0.05);position:relative}
+.code-header{background:rgba(255,255,255,0.03);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.05)}
+.code-header .dots{display:flex;gap:6px}
+.code-header .dot{width:10px;height:10px;border-radius:50%}
+.code-header .dot:nth-child(1){background:#ff5f57}
+.code-header .dot:nth-child(2){background:#febc2e}
+.code-header .dot:nth-child(3){background:#28c840}
+.code-header .filename{color:var(--text-dim);font-size:0.78rem;font-family:'JetBrains Mono',monospace}
+.code-header .lang-badge{font-size:0.65rem;padding:2px 8px;border-radius:4px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.code-header .lang-badge.java{background:rgba(248,152,32,0.15);color:var(--java)}
+.code-header .lang-badge.properties{background:rgba(78,205,196,0.15);color:var(--accent3)}
+.code-header .lang-badge.sql{background:rgba(69,183,209,0.15);color:var(--accent4)}
+.code-header .lang-badge.json{background:rgba(247,183,49,0.15);color:var(--accent5)}
+.code-header .lang-badge.http{background:rgba(255,107,107,0.15);color:var(--accent2)}
+pre{padding:20px;margin:0;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.85;color:#c9d1d9;tab-size:4}
+.code-block.with-lines pre{padding-left:56px}
+.code-block .line-numbers{position:absolute;left:0;top:44px;padding:20px 12px 20px 16px;color:rgba(255,255,255,0.12);font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.85;text-align:right;user-select:none;border-right:1px solid rgba(255,255,255,0.03)}
+
+/* Syntax */
+.kw{color:#c4a7e7}.fn{color:#82aaff}.st{color:#c3e88d}.cm{color:#546e7a;font-style:italic}.an{color:#ffcb6b}.tp{color:#f78c6c}.nb{color:#89ddff}.op{color:#c9d1d9}.num{color:#f78c6c}.bool{color:#82aaff}.pkg{color:#546e7a}
+
+/* Annotation highlight */
+.anno-line{display:inline-block;width:100%;padding:2px 6px;margin:0 -6px;border-radius:4px;transition:background 0.3s;cursor:help;position:relative}
+.anno-line:hover{background:rgba(108,99,255,0.08)}
+.anno-tooltip{display:none;position:absolute;left:100%;top:0;margin-left:12px;background:var(--surface2);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:12px 16px;min-width:280px;z-index:10;font-size:0.8rem;line-height:1.5;color:var(--text-dim);font-family:'Nunito',sans-serif;font-style:normal;box-shadow:0 8px 30px rgba(0,0,0,0.4)}
+.anno-line:hover .anno-tooltip{display:block}
+.anno-tooltip strong{color:var(--accent5);display:block;margin-bottom:4px;font-size:0.85rem}
+
+/* === FLOW DIAGRAM === */
+.flow-container{display:flex;flex-direction:column;align-items:center;gap:0;margin:24px 0}
+.flow-box{background:var(--surface2);border:2px solid rgba(255,255,255,0.06);border-radius:14px;padding:14px 24px;text-align:center;font-weight:700;font-size:0.9rem;position:relative;min-width:240px;transition:all 0.3s;cursor:default}
+.flow-box:hover{transform:scale(1.03);border-color:rgba(255,255,255,0.15)}
+.flow-box .label{font-size:0.65rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;font-weight:800}
+.flow-box.fb-client{border-color:var(--accent2);background:rgba(255,107,107,0.06)}
+.flow-box.fb-controller{border-color:var(--accent);background:rgba(108,99,255,0.06)}
+.flow-box.fb-service{border-color:var(--accent5);background:rgba(247,183,49,0.06)}
+.flow-box.fb-repo{border-color:var(--accent3);background:rgba(78,205,196,0.06)}
+.flow-box.fb-db{border-color:var(--accent4);background:rgba(69,183,209,0.06)}
+.flow-box.fb-response{border-color:var(--accent7);background:rgba(6,214,160,0.06)}
+.flow-arrow{width:2px;height:32px;position:relative;display:flex;align-items:center;justify-content:center}
+.flow-arrow::before{content:'';position:absolute;width:2px;height:100%;background:linear-gradient(to bottom,var(--text-dim),transparent)}
+.flow-arrow::after{content:'▼';position:absolute;bottom:-8px;color:var(--text-dim);font-size:0.65rem}
+.flow-arrow .flow-label{position:absolute;left:24px;top:50%;transform:translateY(-50%);font-size:0.85rem;color:var(--accent5);font-weight:700;white-space:nowrap;font-family:'Caveat',cursive}
+.flow-arrow .flow-label.right{left:auto;right:24px}
+.flow-arrow-up::after{content:'▲';top:-8px;bottom:auto}
+
+/* === INTERACTIVE DB VISUALIZATION === */
+.db-table{background:var(--surface2);border-radius:14px;overflow:hidden;margin:16px 0;border:1px solid rgba(255,255,255,0.06)}
+.db-table-header{background:rgba(69,183,209,0.1);padding:12px 20px;font-weight:800;font-size:0.85rem;color:var(--accent4);display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.db-table table{width:100%;border-collapse:collapse;font-size:0.82rem;font-family:'JetBrains Mono',monospace}
+.db-table th{padding:10px 16px;text-align:left;color:var(--text-dim);font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid rgba(255,255,255,0.05);background:rgba(255,255,255,0.02)}
+.db-table td{padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.03);color:var(--text)}
+.db-table tr:last-child td{border-bottom:none}
+.db-table tr{transition:background 0.2s}
+.db-table tr:hover td{background:rgba(108,99,255,0.04)}
+.db-row-new{animation:rowSlideIn 0.5s ease both}
+@keyframes rowSlideIn{from{opacity:0;transform:translateX(-20px);background:rgba(108,99,255,0.1)}to{opacity:1;transform:translateX(0);background:transparent}}
+
+/* === ANNOTATION EXPLAINER === */
+.annotation-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:16px 0}
+.annotation-card{background:var(--surface2);border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.05);transition:all 0.3s;cursor:default}
+.annotation-card:hover{border-color:rgba(108,99,255,0.2);transform:translateY(-3px)}
+.annotation-card .anno-name{font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:var(--accent5);font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.annotation-card .anno-name .at{color:var(--accent6)}
+.annotation-card .anno-desc{font-size:0.8rem;color:var(--text-dim);line-height:1.5}
+
+/* === TOGGLER === */
+.toggler{background:var(--surface);border-radius:14px;overflow:hidden;margin:16px 0;border:1px solid rgba(255,255,255,0.05)}
+.toggler-header{padding:16px 24px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background 0.3s;font-weight:700;font-size:0.95rem;user-select:none}
+.toggler-header:hover{background:rgba(255,255,255,0.02)}
+.toggler-arrow{transition:transform 0.3s;font-size:1rem;color:var(--text-dim)}
+.toggler-header.open .toggler-arrow{transform:rotate(180deg)}
+.toggler-body{max-height:0;overflow:hidden;transition:max-height 0.5s ease;padding:0 24px}
+.toggler-body.open{max-height:5000px;padding:0 24px 24px}
+
+/* === TERMINAL DEMO === */
+.demo-terminal{background:#080816;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);margin:16px 0}
+.demo-terminal .term-header{background:rgba(255,255,255,0.03);padding:12px 16px;display:flex;align-items:center;gap:8px}
+.demo-terminal .term-header .dots{display:flex;gap:6px}
+.demo-terminal .term-header .dot{width:10px;height:10px;border-radius:50%}
+.demo-terminal .term-header .dot:nth-child(1){background:#ff5f57}
+.demo-terminal .term-header .dot:nth-child(2){background:#febc2e}
+.demo-terminal .term-header .dot:nth-child(3){background:#28c840}
+.demo-terminal .term-header span{color:var(--text-dim);font-size:0.78rem;font-family:'JetBrains Mono',monospace;margin-left:8px}
+.demo-body{padding:20px;font-family:'JetBrains Mono',monospace;font-size:0.8rem;min-height:200px;color:#c4b5fd;line-height:1.9;max-height:400px;overflow-y:auto}
+.demo-line{opacity:0;transform:translateX(-10px);transition:all 0.4s ease}
+.demo-line.show{opacity:1;transform:translateX(0)}
+.demo-line .method-post{color:#49cc90;font-weight:700}
+.demo-line .method-get{color:#61affe;font-weight:700}
+.demo-line .method-put{color:#fca130;font-weight:700}
+.demo-line .method-patch{color:#50e3c2;font-weight:700}
+.demo-line .method-delete{color:#f93e3e;font-weight:700}
+.demo-line .url{color:var(--text)}
+.demo-line .status-ok{color:#49cc90;font-weight:700}
+.demo-line .status-created{color:#49cc90;font-weight:700}
+.demo-line .status-err{color:#f93e3e;font-weight:700}
+.demo-line .json-key{color:#82aaff}
+.demo-line .json-val{color:#c3e88d}
+.demo-line .json-num{color:#f78c6c}
+.demo-line .arrow{color:var(--accent5)}
+.demo-line .dim{color:var(--text-dim)}
+
+.btn-demo{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent),#5a52e0);color:white;border:none;padding:12px 28px;border-radius:12px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;transition:all 0.3s;margin:8px 4px}
+.btn-demo:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(108,99,255,0.3)}
+.btn-demo:active{transform:translateY(0)}
+.btn-demo.btn-spring{background:linear-gradient(135deg,var(--spring),#4a9e2f)}
+.btn-demo.btn-spring:hover{box-shadow:0 8px 30px rgba(109,179,63,0.3)}
+.btn-demo.btn-red{background:linear-gradient(135deg,var(--accent2),#e05555)}
+.btn-demo.btn-yellow{background:linear-gradient(135deg,var(--accent5),#e0a020)}
+.btn-demo.btn-teal{background:linear-gradient(135deg,var(--accent3),#3ab0a5)}
+.btn-demo.btn-small{padding:8px 18px;font-size:0.82rem}
+
+/* === KEYWORD MAP === */
+.keyword-map{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0}
+.keyword-chip{background:var(--surface2);border-radius:12px;padding:14px;text-align:center;border:1px solid rgba(255,255,255,0.05);transition:all 0.3s;cursor:default}
+.keyword-chip:hover{border-color:rgba(255,255,255,0.12);transform:translateY(-3px)}
+.keyword-chip .emoji{font-size:1.4rem;display:block;margin-bottom:6px}
+.keyword-chip .kw-name{font-weight:800;font-size:0.82rem;color:var(--accent5)}
+.keyword-chip .kw-desc{font-size:0.72rem;color:var(--text-dim);margin-top:4px}
+
+/* === PULSE BADGE === */
+.pulse-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.25);padding:4px 14px;border-radius:50px;font-size:0.78rem;color:var(--accent);font-weight:700}
+.pulse-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s ease-in-out infinite}
+
+/* === SECTION CONNECTOR === */
+.section-connector{display:flex;justify-content:center;margin:10px 0 20px}
+.section-connector .line{width:2px;height:50px;background:linear-gradient(to bottom,rgba(108,99,255,0.15),transparent)}
+
+/* === STAGGER ANIMATION === */
+.stagger>*{opacity:0;transform:translateY(20px);transition:all 0.5s ease}
+.stagger.visible>*:nth-child(1){transition-delay:.05s}
+.stagger.visible>*:nth-child(2){transition-delay:.1s}
+.stagger.visible>*:nth-child(3){transition-delay:.15s}
+.stagger.visible>*:nth-child(4){transition-delay:.2s}
+.stagger.visible>*:nth-child(5){transition-delay:.25s}
+.stagger.visible>*:nth-child(6){transition-delay:.3s}
+.stagger.visible>*:nth-child(7){transition-delay:.35s}
+.stagger.visible>*:nth-child(8){transition-delay:.4s}
+.stagger.visible>*{opacity:1;transform:translateY(0)}
+
+/* === LAYER DIAGRAM === */
+.layer-stack{display:flex;flex-direction:column;gap:4px;margin:20px 0;max-width:500px;margin-left:auto;margin-right:auto}
+.layer-item{padding:16px 24px;border-radius:12px;text-align:center;font-weight:800;font-size:0.9rem;position:relative;transition:all 0.3s;cursor:default}
+.layer-item:hover{transform:scale(1.03)}
+.layer-item .layer-sub{font-size:0.72rem;font-weight:600;color:rgba(255,255,255,0.7);margin-top:2px}
+.layer-client{background:linear-gradient(135deg,rgba(255,107,107,0.15),rgba(255,107,107,0.05));border:1px solid rgba(255,107,107,0.2);color:var(--accent2)}
+.layer-controller{background:linear-gradient(135deg,rgba(108,99,255,0.15),rgba(108,99,255,0.05));border:1px solid rgba(108,99,255,0.2);color:var(--accent)}
+.layer-service{background:linear-gradient(135deg,rgba(247,183,49,0.15),rgba(247,183,49,0.05));border:1px solid rgba(247,183,49,0.2);color:var(--accent5)}
+.layer-repo{background:linear-gradient(135deg,rgba(78,205,196,0.15),rgba(78,205,196,0.05));border:1px solid rgba(78,205,196,0.2);color:var(--accent3)}
+.layer-db{background:linear-gradient(135deg,rgba(69,183,209,0.15),rgba(69,183,209,0.05));border:1px solid rgba(69,183,209,0.2);color:var(--accent4)}
+.layer-arrow{text-align:center;color:var(--text-dim);font-size:0.8rem}
+
+/* === HTTP METHOD BADGES === */
+.method-badge{display:inline-block;padding:2px 10px;border-radius:6px;font-weight:800;font-size:0.7rem;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px}
+.method-badge.post{background:rgba(73,204,144,0.15);color:#49cc90}
+.method-badge.get{background:rgba(97,175,254,0.15);color:#61affe}
+.method-badge.put{background:rgba(252,161,48,0.15);color:#fca130}
+.method-badge.patch{background:rgba(80,227,194,0.15);color:#50e3c2}
+.method-badge.delete{background:rgba(249,62,62,0.15);color:#f93e3e}
+
+/* === ENDPOINT TABLE === */
+.endpoint-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.85rem}
+.endpoint-table th{text-align:left;padding:10px 14px;color:var(--text-dim);font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.endpoint-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.endpoint-table tr:hover td{background:rgba(108,99,255,0.03)}
+.endpoint-table code{font-family:'JetBrains Mono',monospace;font-size:0.8rem}
+
+/* === COPY BUTTON === */
+.copy-btn{position:absolute;top:52px;right:12px;background:rgba(255,255,255,0.06);border:none;color:var(--text-dim);padding:5px 12px;border-radius:8px;font-size:0.75rem;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:all 0.3s;z-index:2}
+.copy-btn:hover{background:rgba(255,255,255,0.12);color:var(--text)}
+
+/* === FOOTER === */
+footer{text-align:center;padding:50px 20px;color:var(--text-dim);font-size:0.82rem;border-top:1px solid rgba(255,255,255,0.04);margin-top:60px}
+footer a{color:var(--accent);text-decoration:none}
+footer .heart{color:var(--accent2);animation:pulse 2s ease-in-out infinite;display:inline-block}
+
+/* === RESPONSIVE === */
+@media(max-width:768px){
+  .container{padding:14px}
+  .card{padding:20px}
+  .hero{padding:60px 16px 40px}
+  .hero-icons{font-size:2.5rem}
+  pre{font-size:0.74rem}
+  .flow-box{min-width:180px;padding:12px 16px;font-size:0.82rem}
+  .annotation-grid{grid-template-columns:1fr}
+  .anno-tooltip{left:0;margin-left:0;top:100%;margin-top:8px}
+  .layer-stack{max-width:100%}
+  .endpoint-table{font-size:0.75rem}
+  .endpoint-table th,.endpoint-table td{padding:8px 10px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orbs"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
+<div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+
+<!-- MENU TOGGLE -->
+<button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
+
+<!-- SIDEBAR NAV -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<nav class="sidebar-nav" id="sidebarNav">
+  <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+  <div class="sidebar-header">
+    <h3>📚 Sumário do Curso</h3>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">🏠 Introdução</div>
+    <a class="sidebar-link" onclick="goTo('hero')"><span class="dot" style="background:var(--accent)"></span>Visão Geral</a>
+    <a class="sidebar-link" onclick="goTo('arquitetura')"><span class="dot" style="background:var(--accent4)"></span>Arquitetura em Camadas</a>
+    <a class="sidebar-link" onclick="goTo('setup')"><span class="dot" style="background:var(--spring)"></span>Setup do Projeto</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">👨‍🎓 Capítulo 1 — Aluno</div>
+    <a class="sidebar-link" onclick="goTo('aluno-model')"><span class="dot" style="background:var(--accent2)"></span>Model</a>
+    <a class="sidebar-link" onclick="goTo('aluno-repo')"><span class="dot" style="background:var(--accent3)"></span>Repository</a>
+    <a class="sidebar-link" onclick="goTo('aluno-service')"><span class="dot" style="background:var(--accent5)"></span>Service</a>
+    <a class="sidebar-link" onclick="goTo('aluno-controller')"><span class="dot" style="background:var(--accent)"></span>Controller</a>
+    <a class="sidebar-link" onclick="goTo('aluno-demo')"><span class="dot" style="background:var(--accent6)"></span>Demo Interativa</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">👨‍🏫 Capítulo 2 — Professor</div>
+    <a class="sidebar-link" onclick="goTo('prof-model')"><span class="dot" style="background:var(--accent4)"></span>Model</a>
+    <a class="sidebar-link" onclick="goTo('prof-repo')"><span class="dot" style="background:var(--accent3)"></span>Repository</a>
+    <a class="sidebar-link" onclick="goTo('prof-service')"><span class="dot" style="background:var(--accent5)"></span>Service</a>
+    <a class="sidebar-link" onclick="goTo('prof-controller')"><span class="dot" style="background:var(--accent)"></span>Controller</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">📖 Capítulo 3 — Disciplina</div>
+    <a class="sidebar-link" onclick="goTo('disc-model')"><span class="dot" style="background:var(--accent5)"></span>Model + @ManyToOne</a>
+    <a class="sidebar-link" onclick="goTo('disc-repo')"><span class="dot" style="background:var(--accent3)"></span>Repository + Query</a>
+    <a class="sidebar-link" onclick="goTo('disc-service')"><span class="dot" style="background:var(--accent5)"></span>Service</a>
+    <a class="sidebar-link" onclick="goTo('disc-controller')"><span class="dot" style="background:var(--accent)"></span>Controller</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">📝 Capítulo 4 — Matrícula</div>
+    <a class="sidebar-link" onclick="goTo('mat-model')"><span class="dot" style="background:var(--accent6)"></span>Model + Enum</a>
+    <a class="sidebar-link" onclick="goTo('mat-service')"><span class="dot" style="background:var(--accent5)"></span>Service (Regras)</a>
+    <a class="sidebar-link" onclick="goTo('mat-controller')"><span class="dot" style="background:var(--accent)"></span>Controller</a>
+    <a class="sidebar-link" onclick="goTo('mat-demo')"><span class="dot" style="background:var(--accent6)"></span>Demo Completa</a>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">📦 Capítulo 5 — DTOs</div>
+    <a class="sidebar-link" onclick="goTo('dto-intro')"><span class="dot" style="background:var(--accent3)"></span>O que é DTO?</a>
+    <a class="sidebar-link" onclick="goTo('dto-code')"><span class="dot" style="background:var(--accent4)"></span>DTOs do Projeto</a>
+    <a class="sidebar-link" onclick="goTo('dto-historico')"><span class="dot" style="background:var(--accent5)"></span>Histórico Acadêmico</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- ════════════════════════════════════════ -->
+<!-- HERO -->
+<!-- ════════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-icons">☕ 🍃 🗄️</div>
+  <div class="hero-badge">UNIESP — Disciplina de Backend</div>
+  <h1>Aluno Online<br>API REST com Spring Boot</h1>
+  <p class="subtitle">Um tutorial completo e passo a passo para construir sua primeira API REST do zero — do Model ao Controller, do banco de dados ao Swagger.</p>
+  <div class="hero-stack">
+    <span class="stack-chip java">☕ Java 17</span>
+    <span class="stack-chip spring">🍃 Spring Boot 3.4</span>
+    <span class="stack-chip pg">🐘 PostgreSQL</span>
+    <span class="stack-chip swagger">📗 Swagger</span>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- INTRO: O QUE VAMOS CONSTRUIR -->
+<!-- ════════════════════════════════════════ -->
+<section class="step-section" id="overview">
+  <div class="step-header">
+    <div class="step-number sn-main">🎯</div>
+    <div>
+      <div class="step-title">O que vamos construir?</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">O panorama completo do projeto</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p style="font-size:1.02rem;margin-bottom:20px">Vamos criar uma <strong style="color:var(--accent5)">API REST</strong> para um sistema acadêmico que gerencia alunos, professores, disciplinas e matrículas. No final, o sistema vai:</p>
+    <div class="keyword-map stagger" id="overviewMap">
+      <div class="keyword-chip"><span class="emoji">👨‍🎓</span><span class="kw-name">CRUD Aluno</span><span class="kw-desc">Criar, listar, buscar, atualizar</span></div>
+      <div class="keyword-chip"><span class="emoji">👨‍🏫</span><span class="kw-name">Cadastro Professor</span><span class="kw-desc">Criar professores</span></div>
+      <div class="keyword-chip"><span class="emoji">📖</span><span class="kw-name">Disciplinas</span><span class="kw-desc">Vinculadas a professores</span></div>
+      <div class="keyword-chip"><span class="emoji">📝</span><span class="kw-name">Matrícula</span><span class="kw-desc">Aluno ↔ Disciplina</span></div>
+      <div class="keyword-chip"><span class="emoji">📊</span><span class="kw-name">Notas</span><span class="kw-desc">Lançar e calcular média</span></div>
+      <div class="keyword-chip"><span class="emoji">🏆</span><span class="kw-name">Histórico</span><span class="kw-desc">Aprovado ou reprovado?</span></div>
+    </div>
+
+    <div class="analogy" style="margin-top:20px">
+      <div class="analogy-title">Analogia: A API é um garçom</div>
+      <p style="color:var(--text-dim)">Pense na API como um <strong style="color:var(--text)">garçom de restaurante</strong>. O cliente (frontend/Postman) faz o pedido, o garçom (Controller) anota, leva para a cozinha (Service), que pega os ingredientes na despensa (Repository/Banco). O prato pronto (JSON) volta pelo garçom.</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- INTRO: ARQUITETURA EM CAMADAS -->
+<!-- ════════════════════════════════════════ -->
+<section class="step-section" id="arquitetura">
+  <div class="step-header">
+    <div class="step-number sn-blue">🏗️</div>
+    <div>
+      <div class="step-title">Arquitetura em Camadas</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Cada camada tem uma responsabilidade</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">🤔 Por que dividir em camadas?</div>
+      <p>Imagine uma fábrica: cada setor tem uma função. O RH não fabrica peças, e a linha de produção não cuida das finanças. No software é igual — <strong style="color:var(--text)">separação de responsabilidades</strong> torna o código organizado, testável e fácil de manter.</p>
+    </div>
+
+    <div class="layer-stack stagger" id="layerStack">
+      <div class="layer-item layer-client">🌐 Cliente (Postman / Swagger / Frontend)<div class="layer-sub">Envia requisições HTTP</div></div>
+      <div class="layer-arrow">↕️ JSON</div>
+      <div class="layer-item layer-controller">🎮 Controller<div class="layer-sub">Recebe requests, devolve responses — @RestController</div></div>
+      <div class="layer-arrow">↕️ Objetos Java</div>
+      <div class="layer-item layer-service">⚙️ Service<div class="layer-sub">Regras de negócio — @Service</div></div>
+      <div class="layer-arrow">↕️ Objetos Java</div>
+      <div class="layer-item layer-repo">🗄️ Repository<div class="layer-sub">Acesso ao banco de dados — @Repository</div></div>
+      <div class="layer-arrow">↕️ SQL (automático)</div>
+      <div class="layer-item layer-db">🐘 PostgreSQL<div class="layer-sub">Banco de dados — onde os dados ficam salvos</div></div>
+    </div>
+
+    <div class="tip" style="margin-top:20px">
+      <span class="tip-icon">💡</span>
+      <div class="tip-content">O Spring Boot gera o SQL automaticamente! Você trabalha com <strong>objetos Java</strong> e o Hibernate traduz tudo para SQL. Isso se chama <strong>ORM (Object-Relational Mapping)</strong>.</div>
+    </div>
+  </div>
+
+  <!-- ANIMATED FLOW -->
+  <div class="card">
+    <h3 style="margin-bottom:16px;color:var(--accent4)">🔄 Fluxo de uma Requisição</h3>
+    <p style="color:var(--text-dim);margin-bottom:20px;font-size:0.9rem">Clique para ver o caminho que um <strong>POST /alunos</strong> faz:</p>
+
+    <button class="btn-demo btn-spring" onclick="runFlowDemo()" id="flowBtn">▶️ Animar Fluxo</button>
+
+    <div class="flow-container" id="flowDiagram">
+      <div class="flow-box fb-client" id="flow-0" style="opacity:0.3">
+        <div class="label">Cliente</div>
+        📮 POST /alunos { "nome": "Maria" }
+      </div>
+      <div class="flow-arrow"><span class="flow-label" id="flow-label-0" style="opacity:0">JSON → HTTP Request</span></div>
+      <div class="flow-box fb-controller" id="flow-1" style="opacity:0.3">
+        <div class="label">Controller</div>
+        🎮 AlunoController.criarAluno()
+      </div>
+      <div class="flow-arrow"><span class="flow-label" id="flow-label-1" style="opacity:0">chama o service</span></div>
+      <div class="flow-box fb-service" id="flow-2" style="opacity:0.3">
+        <div class="label">Service</div>
+        ⚙️ AlunoService.criarAluno()
+      </div>
+      <div class="flow-arrow"><span class="flow-label" id="flow-label-2" style="opacity:0">chama o repository</span></div>
+      <div class="flow-box fb-repo" id="flow-3" style="opacity:0.3">
+        <div class="label">Repository</div>
+        🗄️ alunoRepository.save()
+      </div>
+      <div class="flow-arrow"><span class="flow-label" id="flow-label-3" style="opacity:0">INSERT INTO aluno...</span></div>
+      <div class="flow-box fb-db" id="flow-4" style="opacity:0.3">
+        <div class="label">Banco de Dados</div>
+        🐘 Salvo na tabela "aluno"!
+      </div>
+      <div class="flow-arrow flow-arrow-up"><span class="flow-label right" id="flow-label-4" style="opacity:0">201 Created ✅</span></div>
+      <div class="flow-box fb-response" id="flow-5" style="opacity:0.3">
+        <div class="label">Resposta</div>
+        ✅ HTTP 201 — Aluno criado!
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- SETUP DO PROJETO -->
+<!-- ════════════════════════════════════════ -->
+<section class="step-section" id="setup">
+  <div class="step-header">
+    <div class="step-number" style="background:var(--spring)">🍃</div>
+    <div>
+      <div class="step-title">Setup do Projeto</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Spring Initializr + Configuração</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">🚀 Spring Initializr</div>
+      <p>Acesse <strong style="color:var(--spring)"><a href="https://start.spring.io" target="_blank" style="color:var(--spring)">start.spring.io</a></strong> e gere o projeto com essas opções:</p>
+    </div>
+
+    <div class="annotation-grid" style="margin:20px 0">
+      <div class="annotation-card">
+        <div class="anno-name">📦 Project</div>
+        <div class="anno-desc">Maven</div>
+      </div>
+      <div class="annotation-card">
+        <div class="anno-name">☕ Language</div>
+        <div class="anno-desc">Java 17</div>
+      </div>
+      <div class="annotation-card">
+        <div class="anno-name">🍃 Spring Boot</div>
+        <div class="anno-desc">3.4.3</div>
+      </div>
+      <div class="annotation-card">
+        <div class="anno-name">📂 Group</div>
+        <div class="anno-desc">br.com.alunoonline</div>
+      </div>
+      <div class="annotation-card">
+        <div class="anno-name">📄 Artifact</div>
+        <div class="anno-desc">api</div>
+      </div>
+    </div>
+
+    <h4 style="margin:20px 0 10px;color:var(--accent3)">📚 Dependências para adicionar:</h4>
+    <div class="annotation-grid">
+      <div class="annotation-card"><div class="anno-name" style="color:var(--spring)">Spring Web</div><div class="anno-desc">Para criar endpoints REST</div></div>
+      <div class="annotation-card"><div class="anno-name" style="color:var(--accent4)">Spring Data JPA</div><div class="anno-desc">Para acessar o banco de dados</div></div>
+      <div class="annotation-card"><div class="anno-name" style="color:var(--accent4)">PostgreSQL Driver</div><div class="anno-desc">Driver de conexão com PostgreSQL</div></div>
+      <div class="annotation-card"><div class="anno-name" style="color:var(--accent2)">Lombok</div><div class="anno-desc">Gera getters, setters, construtores</div></div>
+    </div>
+  </div>
+
+  <!-- application.properties -->
+  <div class="card" style="position:relative">
+    <h3 style="margin-bottom:12px;color:var(--accent3)">⚙️ application.properties</h3>
+    <p style="color:var(--text-dim);font-size:0.9rem;margin-bottom:16px">Este arquivo configura a conexão com o banco de dados e o comportamento do Hibernate:</p>
+
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">src/main/resources/application.properties</span><span class="lang-badge properties">properties</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13</div>
+      <pre>
+<span class="cm"># Nome da aplicação</span>
+<span class="an">spring.application.name</span>=<span class="st">Aluno Online</span>
+
+<span class="cm"># Conexão com o Banco de Dados PostgreSQL</span>
+<span class="an">spring.datasource.url</span>=<span class="st">jdbc:postgresql://localhost:5432/aluno_online</span>
+<span class="an">spring.datasource.username</span>=<span class="st">postgres</span>
+<span class="an">spring.datasource.password</span>=<span class="st">123</span>
+<span class="an">spring.datasource.driver-class-name</span>=<span class="st">org.postgresql.Driver</span>
+
+<span class="cm"># Hibernate: cria/atualiza tabelas automaticamente!</span>
+<span class="an">spring.jpa.database-platform</span>=<span class="st">org.hibernate.dialect.PostgreSQLDialect</span>
+<span class="an">spring.jpa.hibernate.ddl-auto</span>=<span class="st">update</span>
+<span class="an">spring.jpa.show-sql</span>=<span class="st">true</span></pre>
+    </div>
+
+    <div class="toggler">
+      <div class="toggler-header" onclick="toggleSection(this)">
+        <span>🔍 O que cada linha faz?</span>
+        <span class="toggler-arrow">▼</span>
+      </div>
+      <div class="toggler-body">
+        <div style="display:grid;gap:10px;margin-top:8px;font-size:0.88rem">
+          <div><code style="color:var(--accent5)">spring.datasource.url</code> — <span style="color:var(--text-dim)">Endereço do banco: protocolo + host + porta + nome do banco</span></div>
+          <div><code style="color:var(--accent5)">spring.datasource.username/password</code> — <span style="color:var(--text-dim)">Credenciais do PostgreSQL</span></div>
+          <div><code style="color:var(--accent5)">ddl-auto=update</code> — <span style="color:var(--text-dim)">O Hibernate CRIA e ATUALIZA as tabelas automaticamente baseado nas classes @Entity 🪄</span></div>
+          <div><code style="color:var(--accent5)">show-sql=true</code> — <span style="color:var(--text-dim)">Mostra no console o SQL que o Hibernate gera (ótimo para aprender!)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="warning">
+      <span class="warning-icon">⚠️</span>
+      <div style="color:var(--text-dim);font-size:0.9rem"><strong style="color:var(--accent5)">Importante:</strong> Crie o banco <code>aluno_online</code> no PostgreSQL <strong>antes</strong> de rodar o projeto! O Hibernate cria as tabelas, mas não o banco.</div>
+    </div>
+  </div>
+
+  <!-- Estrutura de Pacotes -->
+  <div class="card">
+    <h3 style="margin-bottom:12px;color:var(--accent6)">📂 Estrutura de Pacotes</h3>
+    <p style="color:var(--text-dim);font-size:0.9rem;margin-bottom:16px">Organize assim dentro de <code>br.com.alunoonline.api</code>:</p>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <span class="filename">Estrutura do projeto</span>
+      </div>
+      <pre>
+br.com.alunoonline.api/
+├── 📄 AlunoOnlineApplication.java  <span class="cm">← Classe principal (já vem pronta!)</span>
+├── 📁 <span class="an">model/</span>          <span class="cm">← Entidades JPA (tabelas)</span>
+│   ├── Aluno.java
+│   ├── Professor.java
+│   ├── Disciplina.java
+│   └── MatriculaAluno.java
+├── 📁 <span class="fn">repository/</span>     <span class="cm">← Acesso ao banco</span>
+│   ├── AlunoRepository.java
+│   ├── ProfessorRepository.java
+│   ├── DisciplinaRepository.java
+│   └── MatriculaAlunoRepository.java
+├── 📁 <span class="tp">service/</span>        <span class="cm">← Regras de negócio</span>
+│   ├── AlunoService.java
+│   ├── ProfessorService.java
+│   ├── DisciplinaService.java
+│   └── MatriculaAlunoService.java
+├── 📁 <span class="kw">controller/</span>     <span class="cm">← Endpoints REST</span>
+│   ├── AlunoController.java
+│   ├── ProfessorController.java
+│   ├── DisciplinaController.java
+│   └── MatriculaAlunoController.java
+├── 📁 <span class="st">dtos/</span>           <span class="cm">← Objetos de transferência (parte final)</span>
+├── 📁 <span class="nb">enums/</span>          <span class="cm">← Enumerações</span>
+└── 📁 config/         <span class="cm">← Configurações</span></pre>
+    </div>
+
+    <div class="tip">
+      <span class="tip-icon">📌</span>
+      <div class="tip-content">Sempre crie os pacotes <strong>dentro</strong> do pacote principal <code>br.com.alunoonline.api</code>. Se criar fora, o Spring não vai encontrar as classes!</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════╗ -->
+<!-- ║                    CAPÍTULO 1: ALUNO                        ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════╝ -->
+
+<div class="chapter-divider" id="cap-aluno">
+  <span class="chapter-icon">👨‍🎓</span>
+  <div class="chapter-number">Capítulo 1</div>
+  <h2 class="grad-aluno">CRUD de Aluno</h2>
+  <p class="chapter-subtitle">Sua primeira entidade completa — Create, Read, Update</p>
+</div>
+
+<!-- ALUNO: MODEL -->
+<section class="step-section" id="aluno-model">
+  <div class="step-header">
+    <div class="step-number sn-red">1.1</div>
+    <div>
+      <div class="step-title">Model — Aluno.java</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">A entidade que representa a tabela no banco</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">🤔 O que é um Model?</div>
+      <p>O Model é uma <strong style="color:var(--text)">classe Java que representa uma tabela</strong> no banco de dados. Cada <strong>atributo</strong> da classe vira uma <strong>coluna</strong> na tabela. Cada <strong>objeto</strong> que criamos vira uma <strong>linha</strong> na tabela.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="analogy-title">Analogia: Ficha de Cadastro</div>
+      <p style="color:var(--text-dim)">O Model é como uma <strong style="color:var(--text)">ficha de cadastro em branco</strong>. A ficha define os campos (nome, CPF, email). Quando você preenche uma ficha, é como criar um objeto. Quando guarda no arquivo, é como salvar no banco!</p>
+    </div>
+
+    <div class="code-block with-lines" style="position:relative">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">model/Aluno.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.model;</span>
+
+<span class="pkg">import jakarta.persistence.*;</span>
+<span class="pkg">import lombok.*;</span>
+
+<span class="anno-line"><span class="an">@NoArgsConstructor</span>  <span class="cm">// Gera construtor vazio</span><span class="anno-tooltip"><strong>@NoArgsConstructor</strong>O Lombok gera automaticamente um construtor sem parâmetros: <code>public Aluno() {}</code>. O JPA exige esse construtor para criar objetos a partir do banco.</span></span>
+<span class="anno-line"><span class="an">@AllArgsConstructor</span> <span class="cm">// Gera construtor com todos os campos</span><span class="anno-tooltip"><strong>@AllArgsConstructor</strong>Gera um construtor com TODOS os atributos: <code>public Aluno(Long id, String nome, String cpf, String email) {}</code></span></span>
+<span class="anno-line"><span class="an">@Data</span>                <span class="cm">// Gera getters, setters, toString, equals</span><span class="anno-tooltip"><strong>@Data</strong>Anotação do Lombok que gera automaticamente: getters, setters, toString(), equals(), hashCode(). Sem ela, você teria que escrever ~60 linhas de código!</span></span>
+<span class="anno-line"><span class="an">@Table</span>(name = <span class="st">"aluno"</span>)   <span class="cm">// Nome da tabela no banco</span><span class="anno-tooltip"><strong>@Table(name = "aluno")</strong>Define o nome da tabela no PostgreSQL. Sem essa anotação, o Hibernate usaria o nome da classe como nome da tabela.</span></span>
+<span class="anno-line"><span class="an">@Entity</span>              <span class="cm">// "Esta classe é uma tabela!"</span><span class="anno-tooltip"><strong>@Entity</strong>Diz ao JPA: "esta classe Java representa uma tabela no banco de dados". É a anotação mais importante do Model!</span></span>
+<span class="kw">public class</span> <span class="tp">Aluno</span> {
+
+<span class="anno-line">    <span class="an">@Id</span>                          <span class="cm">// "Este campo é a chave primária"</span><span class="anno-tooltip"><strong>@Id</strong>Marca este campo como a PRIMARY KEY da tabela. Todo @Entity precisa ter um @Id.</span></span>
+<span class="anno-line">    <span class="an">@GeneratedValue</span>(strategy = <span class="tp">GenerationType</span>.<span class="nb">IDENTITY</span>)<span class="anno-tooltip"><strong>@GeneratedValue(strategy = IDENTITY)</strong>O banco gera o ID automaticamente (auto-increment). Você NÃO precisa definir o ID ao criar um aluno — o PostgreSQL cuida disso!</span></span>
+    <span class="kw">private</span> <span class="tp">Long</span> id;
+
+    <span class="kw">private</span> <span class="tp">String</span> nome;
+
+    <span class="kw">private</span> <span class="tp">String</span> cpf;
+
+    <span class="kw">private</span> <span class="tp">String</span> email;
+}</pre>
+    </div>
+
+    <div class="toggler">
+      <div class="toggler-header" onclick="toggleSection(this)">
+        <span>🏷️ O que cada anotação faz? (Clique para expandir)</span>
+        <span class="toggler-arrow">▼</span>
+      </div>
+      <div class="toggler-body">
+        <div class="annotation-grid" style="margin-top:8px">
+          <div class="annotation-card"><div class="anno-name"><span class="at">@</span>Entity</div><div class="anno-desc">"Esta classe é uma tabela no banco!" — Sem isso, o JPA ignora a classe.</div></div>
+          <div class="annotation-card"><div class="anno-name"><span class="at">@</span>Table</div><div class="anno-desc">Define o nome da tabela. Sem ela, usa o nome da classe.</div></div>
+          <div class="annotation-card"><div class="anno-name"><span class="at">@</span>Id</div><div class="anno-desc">Marca o campo como PRIMARY KEY. Obrigatório em toda @Entity.</div></div>
+          <div class="annotation-card"><div class="anno-name"><span class="at">@</span>GeneratedValue</div><div class="anno-desc">O banco gera o valor automaticamente (auto-increment).</div></div>
+          <div class="annotation-card"><div class="anno-name"><span class="at">@</span>Data</div><div class="anno-desc">Lombok: gera getters, setters, toString, equals, hashCode.</div></div>
+          <div class="annotation-card"><div class="anno-name"><span class="at">@</span>NoArgsConstructor</div><div class="anno-desc">Lombok: gera construtor vazio (exigido pelo JPA).</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DB Visualization -->
+    <h4 style="margin:24px 0 12px;color:var(--accent4)">🗄️ Como fica no banco de dados:</h4>
+    <div class="db-table">
+      <div class="db-table-header">🐘 Tabela: aluno</div>
+      <table>
+        <thead><tr><th>id (PK)</th><th>nome</th><th>cpf</th><th>email</th></tr></thead>
+        <tbody id="alunoDbTable">
+          <tr style="color:var(--text-dim);font-style:italic"><td colspan="4" style="text-align:center;padding:20px">Tabela vazia — use os botões abaixo para simular inserções!</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn-demo btn-small" onclick="addAlunoDb('Maria Silva','111.222.333-44','maria@email.com')">+ Maria Silva</button>
+      <button class="btn-demo btn-small btn-spring" onclick="addAlunoDb('João Santos','555.666.777-88','joao@email.com')">+ João Santos</button>
+      <button class="btn-demo btn-small btn-teal" onclick="addAlunoDb('Ana Costa','999.000.111-22','ana@email.com')">+ Ana Costa</button>
+      <button class="btn-demo btn-small" onclick="resetAlunoDb()" style="background:var(--surface2);border:1px solid rgba(255,255,255,0.1)">🔄 Limpar</button>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- ALUNO: REPOSITORY -->
+<section class="step-section" id="aluno-repo">
+  <div class="step-header">
+    <div class="step-number sn-green">1.2</div>
+    <div>
+      <div class="step-title">Repository — AlunoRepository.java</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">A camada que conversa com o banco</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">🗄️ O que é um Repository?</div>
+      <p>O Repository é uma <strong style="color:var(--text)">interface</strong> (não uma classe!) que herda de <code style="color:var(--accent6)">JpaRepository</code>. Ao estender ela, você ganha <strong>de graça</strong> vários métodos para operar no banco — sem escrever nenhum SQL!</p>
+    </div>
+
+    <div class="analogy">
+      <div class="analogy-title">Analogia: Funcionário do Arquivo</div>
+      <p style="color:var(--text-dim)">O Repository é como um <strong style="color:var(--text)">funcionário do arquivo morto</strong>. Você pede: "guarde esta ficha", "me dê a ficha do ID 5", "me dê todas as fichas". Ele faz tudo sem você saber como o arquivo está organizado internamente.</p>
+    </div>
+
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">repository/AlunoRepository.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.repository;</span>
+
+<span class="pkg">import br.com.alunoonline.api.model.Aluno;</span>
+<span class="pkg">import org.springframework.data.jpa.repository.JpaRepository;</span>
+<span class="pkg">import org.springframework.stereotype.Repository;</span>
+
+<span class="anno-line"><span class="an">@Repository</span><span class="anno-tooltip"><strong>@Repository</strong>Marca esta interface como um componente de acesso a dados do Spring. Ajuda no tratamento de exceções do banco.</span></span>
+<span class="kw">public interface</span> <span class="tp">AlunoRepository</span> <span class="kw">extends</span> <span class="tp">JpaRepository</span>&lt;<span class="tp">Aluno</span>, <span class="tp">Long</span>&gt; {
+}  <span class="cm">// Sim, está vazio! E já funciona! 🪄</span></pre>
+    </div>
+
+    <div class="tip">
+      <span class="tip-icon">🪄</span>
+      <div class="tip-content">
+        <strong>JpaRepository&lt;Aluno, Long&gt;</strong> significa: "este repositório gerencia a entidade <strong>Aluno</strong> e sua chave primária é do tipo <strong>Long</strong>". Ao herdar, você ganha de graça:
+      </div>
+    </div>
+
+    <div class="annotation-grid" style="margin-top:12px">
+      <div class="annotation-card"><div class="anno-name" style="color:var(--accent3)">.save(aluno)</div><div class="anno-desc">INSERT ou UPDATE — salva no banco</div></div>
+      <div class="annotation-card"><div class="anno-name" style="color:var(--accent3)">.findAll()</div><div class="anno-desc">SELECT * — retorna todos</div></div>
+      <div class="annotation-card"><div class="anno-name" style="color:var(--accent3)">.findById(id)</div><div class="anno-desc">SELECT WHERE id = ? — busca por ID</div></div>
+      <div class="annotation-card"><div class="anno-name" style="color:var(--accent3)">.deleteById(id)</div><div class="anno-desc">DELETE WHERE id = ? — deleta por ID</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- ALUNO: SERVICE -->
+<section class="step-section" id="aluno-service">
+  <div class="step-header">
+    <div class="step-number sn-yellow">1.3</div>
+    <div>
+      <div class="step-title">Service — AlunoService.java</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Onde ficam as regras de negócio</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">⚙️ O que é um Service?</div>
+      <p>O Service é a <strong style="color:var(--text)">camada de regras de negócio</strong>. É aqui que a lógica acontece: validações, cálculos, decisões. O Controller nunca acessa o Repository diretamente — sempre passa pelo Service.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="analogy-title">Analogia: O gerente</div>
+      <p style="color:var(--text-dim)">O Service é como um <strong style="color:var(--text)">gerente</strong>. O atendente (Controller) recebe o pedido do cliente, mas quem decide o que fazer é o gerente (Service). O gerente delega o trabalho braçal para o estagiário (Repository).</p>
+    </div>
+
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">service/AlunoService.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30<br>31<br>32<br>33<br>34<br>35<br>36<br>37<br>38<br>39<br>40<br>41</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.service;</span>
+
+<span class="pkg">import br.com.alunoonline.api.model.Aluno;</span>
+<span class="pkg">import br.com.alunoonline.api.repository.AlunoRepository;</span>
+<span class="pkg">import org.springframework.beans.factory.annotation.Autowired;</span>
+<span class="pkg">import org.springframework.http.HttpStatus;</span>
+<span class="pkg">import org.springframework.stereotype.Service;</span>
+<span class="pkg">import org.springframework.web.server.ResponseStatusException;</span>
+<span class="pkg">import java.util.List;</span>
+<span class="pkg">import java.util.Optional;</span>
+
+<span class="anno-line"><span class="an">@Service</span>  <span class="cm">// "Esta classe é um Service do Spring!"</span><span class="anno-tooltip"><strong>@Service</strong>Marca a classe como um componente de serviço do Spring. O Spring cria uma instância automaticamente e gerencia o ciclo de vida dela.</span></span>
+<span class="kw">public class</span> <span class="tp">AlunoService</span> {
+
+<span class="anno-line">    <span class="an">@Autowired</span>  <span class="cm">// Injeção de dependência automática!</span><span class="anno-tooltip"><strong>@Autowired</strong>O Spring injeta automaticamente uma instância do AlunoRepository aqui. Você NÃO precisa fazer <code>new AlunoRepository()</code> — o Spring cuida disso!</span></span>
+    <span class="tp">AlunoRepository</span> alunoRepository;
+
+    <span class="cm">// CREATE — salvar novo aluno</span>
+    <span class="kw">public void</span> <span class="fn">criarAluno</span>(<span class="tp">Aluno</span> aluno) {
+        alunoRepository.<span class="fn">save</span>(aluno);  <span class="cm">// INSERT INTO aluno ...</span>
+    }
+
+    <span class="cm">// READ — listar todos</span>
+    <span class="kw">public</span> <span class="tp">List</span>&lt;<span class="tp">Aluno</span>&gt; <span class="fn">listarTodosAlunos</span>() {
+        <span class="kw">return</span> alunoRepository.<span class="fn">findAll</span>();  <span class="cm">// SELECT * FROM aluno</span>
+    }
+
+    <span class="cm">// READ — buscar por ID</span>
+    <span class="kw">public</span> <span class="tp">Optional</span>&lt;<span class="tp">Aluno</span>&gt; <span class="fn">buscarAlunoPorId</span>(<span class="tp">Long</span> id) {
+        <span class="kw">return</span> alunoRepository.<span class="fn">findById</span>(id);  <span class="cm">// SELECT * FROM aluno WHERE id = ?</span>
+    }
+
+    <span class="cm">// UPDATE — atualizar por ID</span>
+    <span class="kw">public void</span> <span class="fn">atualizarAlunoPorId</span>(<span class="tp">Long</span> id, <span class="tp">Aluno</span> aluno) {
+        <span class="tp">Optional</span>&lt;<span class="tp">Aluno</span>&gt; alunoDoBanco = <span class="fn">buscarAlunoPorId</span>(id);
+
+        <span class="kw">if</span> (alunoDoBanco.<span class="fn">isEmpty</span>()) {
+            <span class="kw">throw new</span> <span class="tp">ResponseStatusException</span>(
+                <span class="tp">HttpStatus</span>.<span class="nb">NOT_FOUND</span>, <span class="st">"Aluno não encontrado"</span>);
+        }
+
+        <span class="tp">Aluno</span> alunoParaEditar = alunoDoBanco.<span class="fn">get</span>();
+        alunoParaEditar.<span class="fn">setNome</span>(aluno.<span class="fn">getNome</span>());
+        alunoParaEditar.<span class="fn">setCpf</span>(aluno.<span class="fn">getCpf</span>());
+        alunoParaEditar.<span class="fn">setEmail</span>(aluno.<span class="fn">getEmail</span>());
+
+        alunoRepository.<span class="fn">save</span>(alunoParaEditar);  <span class="cm">// UPDATE aluno SET ...</span>
+    }
+}</pre>
+    </div>
+
+    <div class="toggler">
+      <div class="toggler-header" onclick="toggleSection(this)">
+        <span>🔍 O que é Optional e por que usamos?</span>
+        <span class="toggler-arrow">▼</span>
+      </div>
+      <div class="toggler-body">
+        <div style="margin-top:8px;color:var(--text-dim);font-size:0.9rem">
+          <p><code style="color:var(--accent6)">Optional&lt;Aluno&gt;</code> é como uma <strong style="color:var(--text)">caixa que pode estar vazia ou conter um aluno</strong>.</p>
+          <p style="margin-top:8px">Quando buscamos por ID, o aluno pode não existir. O Optional nos obriga a tratar esse caso:</p>
+          <ul style="margin:8px 0 0 20px;display:flex;flex-direction:column;gap:4px">
+            <li><code>.isEmpty()</code> → a caixa está vazia? (aluno não existe)</li>
+            <li><code>.get()</code> → pega o aluno de dentro da caixa</li>
+            <li><code>.isPresent()</code> → tem algo na caixa?</li>
+          </ul>
+          <p style="margin-top:8px">Isso evita o famoso <strong style="color:var(--accent2)">NullPointerException</strong>! 💀</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="toggler">
+      <div class="toggler-header" onclick="toggleSection(this)">
+        <span>🔍 O que é @Autowired?</span>
+        <span class="toggler-arrow">▼</span>
+      </div>
+      <div class="toggler-body">
+        <div style="margin-top:8px;color:var(--text-dim);font-size:0.9rem">
+          <p><strong style="color:var(--accent5)">Injeção de Dependência</strong> — O Spring cria os objetos pra você!</p>
+          <p style="margin-top:8px">Sem @Autowired, você teria que fazer: <code>AlunoRepository repo = new AlunoRepository()</code></p>
+          <p style="margin-top:4px">Com @Autowired, o Spring faz isso automaticamente quando a aplicação inicia. É como ter um <strong style="color:var(--text)">assistente que prepara tudo antes de você começar a trabalhar</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- ALUNO: CONTROLLER -->
+<section class="step-section" id="aluno-controller">
+  <div class="step-header">
+    <div class="step-number sn-main">1.4</div>
+    <div>
+      <div class="step-title">Controller — AlunoController.java</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">A porta de entrada da API — endpoints REST</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">🎮 O que é um Controller?</div>
+      <p>O Controller é a <strong style="color:var(--text)">porta de entrada</strong> da API. Ele recebe as requisições HTTP (GET, POST, PUT, DELETE), chama o Service apropriado, e devolve a resposta. É aqui que definimos as <strong>URLs</strong> (endpoints) da API.</p>
+    </div>
+
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">controller/AlunoController.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30<br>31<br>32<br>33<br>34<br>35<br>36</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.controller;</span>
+
+<span class="pkg">import br.com.alunoonline.api.model.Aluno;</span>
+<span class="pkg">import br.com.alunoonline.api.service.AlunoService;</span>
+<span class="pkg">import org.springframework.beans.factory.annotation.Autowired;</span>
+<span class="pkg">import org.springframework.http.HttpStatus;</span>
+<span class="pkg">import org.springframework.web.bind.annotation.*;</span>
+<span class="pkg">import java.util.List;</span>
+<span class="pkg">import java.util.Optional;</span>
+
+<span class="anno-line"><span class="an">@RestController</span>          <span class="cm">// "Esta classe é um controller REST!"</span><span class="anno-tooltip"><strong>@RestController</strong>Combina @Controller + @ResponseBody. Diz ao Spring que esta classe recebe requisições HTTP e retorna JSON automaticamente.</span></span>
+<span class="anno-line"><span class="an">@RequestMapping</span>(<span class="st">"/alunos"</span>)  <span class="cm">// URL base: /alunos</span><span class="anno-tooltip"><strong>@RequestMapping("/alunos")</strong>Define a URL base. Todos os endpoints dessa classe começam com /alunos.</span></span>
+<span class="kw">public class</span> <span class="tp">AlunoController</span> {
+
+    <span class="an">@Autowired</span>
+    <span class="tp">AlunoService</span> alunoService;
+
+    <span class="anno-line"><span class="an">@PostMapping</span>                     <span class="cm">// POST /alunos</span><span class="anno-tooltip"><strong>@PostMapping</strong>Este método responde a requisições HTTP POST. Usado para CRIAR recursos.</span></span>
+    <span class="anno-line"><span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">CREATED</span>)  <span class="cm">// Retorna 201</span><span class="anno-tooltip"><strong>@ResponseStatus(CREATED)</strong>Define que a resposta HTTP terá o status 201 (Created) em vez do padrão 200 (OK).</span></span>
+    <span class="kw">public void</span> <span class="fn">criarAluno</span>(<span class="an">@RequestBody</span> <span class="tp">Aluno</span> aluno) {
+        alunoService.<span class="fn">criarAluno</span>(aluno);
+    }
+
+    <span class="anno-line"><span class="an">@GetMapping</span>                      <span class="cm">// GET /alunos</span><span class="anno-tooltip"><strong>@GetMapping</strong>Responde a requisições HTTP GET. Usado para BUSCAR/LISTAR recursos.</span></span>
+    <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">OK</span>)
+    <span class="kw">public</span> <span class="tp">List</span>&lt;<span class="tp">Aluno</span>&gt; <span class="fn">listarTodosAlunos</span>() {
+        <span class="kw">return</span> alunoService.<span class="fn">listarTodosAlunos</span>();
+    }
+
+    <span class="anno-line"><span class="an">@GetMapping</span>(<span class="st">"/{id}"</span>)              <span class="cm">// GET /alunos/1</span><span class="anno-tooltip"><strong>@GetMapping("/{id}")</strong>O {id} é um parâmetro de caminho (path variable). Se a URL for /alunos/5, o id será 5.</span></span>
+    <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">OK</span>)
+    <span class="kw">public</span> <span class="tp">Optional</span>&lt;<span class="tp">Aluno</span>&gt; <span class="fn">buscarAlunoPorId</span>(<span class="anno-line"><span class="an">@PathVariable</span> <span class="tp">Long</span> id<span class="anno-tooltip"><strong>@PathVariable</strong>Captura o valor da URL. Em /alunos/5, o parâmetro id recebe o valor 5.</span></span>) {
+        <span class="kw">return</span> alunoService.<span class="fn">buscarAlunoPorId</span>(id);
+    }
+
+    <span class="anno-line"><span class="an">@PutMapping</span>(<span class="st">"/{id}"</span>)              <span class="cm">// PUT /alunos/1</span><span class="anno-tooltip"><strong>@PutMapping</strong>Responde a requisições HTTP PUT. Usado para ATUALIZAR recursos completamente.</span></span>
+    <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">NO_CONTENT</span>)  <span class="cm">// 204</span>
+    <span class="kw">public void</span> <span class="fn">atualizarAlunoPorId</span>(<span class="an">@PathVariable</span> <span class="tp">Long</span> id,
+                                    <span class="anno-line"><span class="an">@RequestBody</span> <span class="tp">Aluno</span> aluno<span class="anno-tooltip"><strong>@RequestBody</strong>Converte o JSON do corpo da requisição para um objeto Java automaticamente. O Spring faz a "mágica" de transformar JSON → Objeto.</span></span>) {
+        alunoService.<span class="fn">atualizarAlunoPorId</span>(id, aluno);
+    }
+}</pre>
+    </div>
+
+    <!-- Endpoint Table -->
+    <h4 style="margin:20px 0 10px;color:var(--accent4)">📍 Endpoints do Aluno</h4>
+    <table class="endpoint-table">
+      <thead><tr><th>Método</th><th>URL</th><th>Ação</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method-badge post">POST</span></td><td><code>/alunos</code></td><td>Criar aluno</td><td>201 Created</td></tr>
+        <tr><td><span class="method-badge get">GET</span></td><td><code>/alunos</code></td><td>Listar todos</td><td>200 OK</td></tr>
+        <tr><td><span class="method-badge get">GET</span></td><td><code>/alunos/{id}</code></td><td>Buscar por ID</td><td>200 OK</td></tr>
+        <tr><td><span class="method-badge put">PUT</span></td><td><code>/alunos/{id}</code></td><td>Atualizar aluno</td><td>204 No Content</td></tr>
+      </tbody>
+    </table>
+
+    <div class="toggler">
+      <div class="toggler-header" onclick="toggleSection(this)">
+        <span>🔍 @RequestBody vs @PathVariable — qual a diferença?</span>
+        <span class="toggler-arrow">▼</span>
+      </div>
+      <div class="toggler-body">
+        <div style="margin-top:8px;color:var(--text-dim);font-size:0.9rem;display:grid;gap:12px">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="background:var(--accent5);color:var(--bg);padding:2px 10px;border-radius:6px;font-weight:800;font-size:0.78rem;flex-shrink:0">@RequestBody</span>
+            <span>Pega os dados do <strong style="color:var(--text)">corpo</strong> da requisição (o JSON). Exemplo: <code>{ "nome": "Maria" }</code></span>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="background:var(--accent);color:white;padding:2px 10px;border-radius:6px;font-weight:800;font-size:0.78rem;flex-shrink:0">@PathVariable</span>
+            <span>Pega o valor da <strong style="color:var(--text)">URL</strong>. Em <code>/alunos/5</code>, o {id} vira 5.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- ALUNO: DEMO INTERATIVA -->
+<section class="step-section" id="aluno-demo">
+  <div class="step-header">
+    <div class="step-number sn-purple">▶</div>
+    <div>
+      <div class="step-title">Demo: CRUD de Aluno</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Simulação do Swagger/Postman</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p style="color:var(--text-dim);margin-bottom:16px">Veja como as requisições funcionam no terminal. Clique nos botões para simular:</p>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      <button class="btn-demo btn-spring btn-small" onclick="demoAlunoCrud('post')"><span class="method-badge post">POST</span> Criar</button>
+      <button class="btn-demo btn-small" onclick="demoAlunoCrud('getAll')"><span class="method-badge get">GET</span> Listar</button>
+      <button class="btn-demo btn-small btn-teal" onclick="demoAlunoCrud('getOne')"><span class="method-badge get">GET</span> Buscar/1</button>
+      <button class="btn-demo btn-small btn-yellow" onclick="demoAlunoCrud('put')"><span class="method-badge put">PUT</span> Atualizar</button>
+    </div>
+
+    <div class="demo-terminal">
+      <div class="term-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <span>Swagger UI — localhost:8080</span>
+      </div>
+      <div class="demo-body" id="alunoDemoBody">
+        <div style="color:var(--text-dim);font-style:italic">Clique em um botão acima para simular uma requisição...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════╗ -->
+<!-- ║                  CAPÍTULO 2: PROFESSOR                      ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════╝ -->
+
+<div class="chapter-divider" id="cap-prof">
+  <span class="chapter-icon">👨‍🏫</span>
+  <div class="chapter-number">Capítulo 2</div>
+  <h2 class="grad-prof">Cadastro de Professor</h2>
+  <p class="chapter-subtitle">A segunda entidade — mesma estrutura, reforçando o padrão</p>
+</div>
+
+<!-- PROF: MODEL -->
+<section class="step-section" id="prof-model">
+  <div class="step-header">
+    <div class="step-number sn-blue">2.1</div>
+    <div>
+      <div class="step-title">Model — Professor.java</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Mesma estrutura do Aluno — reforçando o padrão</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="tip">
+      <span class="tip-icon">🔁</span>
+      <div class="tip-content"><strong>Percebeu o padrão?</strong> A estrutura é a mesma do Aluno! Model → Repository → Service → Controller. Na programação, identificar padrões é <strong>superpoder</strong>.</div>
+    </div>
+
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">model/Professor.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.model;</span>
+
+<span class="pkg">import jakarta.persistence.*;</span>
+<span class="pkg">import lombok.*;</span>
+
+<span class="an">@NoArgsConstructor</span>
+<span class="an">@AllArgsConstructor</span>
+<span class="an">@Data</span>
+<span class="an">@Table</span>(name = <span class="st">"professor"</span>)
+<span class="an">@Entity</span>
+<span class="kw">public class</span> <span class="tp">Professor</span> {
+
+    <span class="an">@Id</span>
+    <span class="an">@GeneratedValue</span>(strategy = <span class="tp">GenerationType</span>.<span class="nb">IDENTITY</span>)
+    <span class="kw">private</span> <span class="tp">Long</span> id;
+
+    <span class="kw">private</span> <span class="tp">String</span> nome;
+
+    <span class="kw">private</span> <span class="tp">String</span> email;
+
+    <span class="kw">private</span> <span class="tp">String</span> cpf;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- PROF: REPO + SERVICE + CONTROLLER  -->
+<section class="step-section" id="prof-repo">
+  <div class="step-header">
+    <div class="step-number sn-green">2.2</div>
+    <div>
+      <div class="step-title">Repository + Service + Controller</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">O mesmo padrão — agora mais rápido!</div>
+    </div>
+  </div>
+
+  <div class="card" id="prof-service">
+    <h4 style="color:var(--accent3);margin-bottom:12px">🗄️ ProfessorRepository.java</h4>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">repository/ProfessorRepository.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.repository;</span>
+
+<span class="pkg">import br.com.alunoonline.api.model.Professor;</span>
+<span class="pkg">import org.springframework.data.jpa.repository.JpaRepository;</span>
+<span class="pkg">import org.springframework.stereotype.Repository;</span>
+
+<span class="an">@Repository</span>
+<span class="kw">public interface</span> <span class="tp">ProfessorRepository</span> <span class="kw">extends</span> <span class="tp">JpaRepository</span>&lt;<span class="tp">Professor</span>, <span class="tp">Long</span>&gt; {
+}</pre>
+    </div>
+
+    <h4 style="color:var(--accent5);margin:24px 0 12px">⚙️ ProfessorService.java</h4>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">service/ProfessorService.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.service;</span>
+
+<span class="pkg">import br.com.alunoonline.api.model.Professor;</span>
+<span class="pkg">import br.com.alunoonline.api.repository.ProfessorRepository;</span>
+<span class="pkg">import org.springframework.beans.factory.annotation.Autowired;</span>
+<span class="pkg">import org.springframework.stereotype.Service;</span>
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="tp">ProfessorService</span> {
+
+    <span class="an">@Autowired</span>
+    <span class="tp">ProfessorRepository</span> professorRepository;
+
+    <span class="kw">public void</span> <span class="fn">criarProfessor</span>(<span class="tp">Professor</span> professor) {
+        professorRepository.<span class="fn">save</span>(professor);
+    }
+}</pre>
+    </div>
+
+    <h4 style="color:var(--accent);margin:24px 0 12px" id="prof-controller">🎮 ProfessorController.java</h4>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">controller/ProfessorController.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.controller;</span>
+
+<span class="pkg">import br.com.alunoonline.api.model.Professor;</span>
+<span class="pkg">import br.com.alunoonline.api.service.ProfessorService;</span>
+<span class="pkg">import org.springframework.beans.factory.annotation.Autowired;</span>
+<span class="pkg">import org.springframework.http.HttpStatus;</span>
+<span class="pkg">import org.springframework.web.bind.annotation.*;</span>
+
+<span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/professores"</span>)
+<span class="kw">public class</span> <span class="tp">ProfessorController</span> {
+
+    <span class="an">@Autowired</span>
+    <span class="tp">ProfessorService</span> professorService;
+
+    <span class="an">@PostMapping</span>
+    <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">CREATED</span>)
+    <span class="kw">public void</span> <span class="fn">criarProfessor</span>(<span class="an">@RequestBody</span> <span class="tp">Professor</span> professor) {
+        professorService.<span class="fn">criarProfessor</span>(professor);
+    }
+}</pre>
+    </div>
+
+    <table class="endpoint-table">
+      <thead><tr><th>Método</th><th>URL</th><th>Ação</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method-badge post">POST</span></td><td><code>/professores</code></td><td>Criar professor</td><td>201 Created</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════╗ -->
+<!-- ║                  CAPÍTULO 3: DISCIPLINA                     ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════╝ -->
+
+<div class="chapter-divider" id="cap-disc">
+  <span class="chapter-icon">📖</span>
+  <div class="chapter-number">Capítulo 3</div>
+  <h2 class="grad-disc">Disciplina</h2>
+  <p class="chapter-subtitle">Primeiro relacionamento — @ManyToOne com Professor</p>
+</div>
+
+<!-- DISC: MODEL -->
+<section class="step-section" id="disc-model">
+  <div class="step-header">
+    <div class="step-number sn-yellow">3.1</div>
+    <div>
+      <div class="step-title">Model — Disciplina.java</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Novidade: @ManyToOne — relacionamento com Professor!</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">🔗 O que é @ManyToOne?</div>
+      <p><strong style="color:var(--text)">Muitas disciplinas para um professor</strong>. Um professor pode lecionar várias disciplinas, mas cada disciplina tem apenas um professor. Isso é um relacionamento <strong style="color:var(--accent6)">Muitos-para-Um (N:1)</strong>.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="analogy-title">Analogia: Filhos e Pais</div>
+      <p style="color:var(--text-dim)">Vários filhos (disciplinas) podem ter o mesmo pai (professor), mas cada filho tem apenas um pai. A disciplina "aponta" para o professor dela — como se tivesse um campo <strong style="color:var(--text)">"quem é meu professor?"</strong>.</p>
+    </div>
+
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">model/Disciplina.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.model;</span>
+
+<span class="pkg">import jakarta.persistence.*;</span>
+<span class="pkg">import lombok.*;</span>
+
+<span class="an">@NoArgsConstructor</span>
+<span class="an">@AllArgsConstructor</span>
+<span class="an">@Data</span>
+<span class="an">@Table</span>(name = <span class="st">"disciplina"</span>)
+<span class="an">@Entity</span>
+<span class="kw">public class</span> <span class="tp">Disciplina</span> {
+
+    <span class="an">@Id</span>
+    <span class="an">@GeneratedValue</span>(strategy = <span class="tp">GenerationType</span>.<span class="nb">IDENTITY</span>)
+    <span class="kw">private</span> <span class="tp">Long</span> id;
+
+    <span class="kw">private</span> <span class="tp">String</span> nome;
+
+    <span class="kw">private</span> <span class="tp">Integer</span> cargaHoraria;
+
+<span class="anno-line">    <span class="an">@ManyToOne</span>  <span class="cm">// "Muitas disciplinas → um professor"</span><span class="anno-tooltip"><strong>@ManyToOne</strong>Define o relacionamento N:1 (Many-to-One). Muitas disciplinas podem apontar para um mesmo professor. No banco, isso cria uma FOREIGN KEY.</span></span>
+<span class="anno-line">    <span class="an">@JoinColumn</span>(name = <span class="st">"professor_id"</span>)  <span class="cm">// Nome da FK no banco</span><span class="anno-tooltip"><strong>@JoinColumn(name = "professor_id")</strong>Define o nome da coluna de FOREIGN KEY na tabela disciplina. Essa coluna guarda o ID do professor associado.</span></span>
+    <span class="kw">private</span> <span class="tp">Professor</span> professor;
+}</pre>
+    </div>
+
+    <!-- Visual: DB Tables with FK -->
+    <h4 style="margin:20px 0 12px;color:var(--accent4)">🗄️ No banco de dados — veja a FK!</h4>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="db-table">
+        <div class="db-table-header">🐘 professor</div>
+        <table>
+          <thead><tr><th>id</th><th>nome</th></tr></thead>
+          <tbody>
+            <tr><td><span style="color:var(--accent5)">1</span></td><td>Prof. Carlos</td></tr>
+            <tr><td><span style="color:var(--accent5)">2</span></td><td>Profa. Ana</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="db-table">
+        <div class="db-table-header">🐘 disciplina</div>
+        <table>
+          <thead><tr><th>id</th><th>nome</th><th style="color:var(--accent2)">professor_id 🔗</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Backend</td><td><span style="color:var(--accent5)">1</span> → Prof. Carlos</td></tr>
+            <tr><td>2</td><td>Frontend</td><td><span style="color:var(--accent5)">1</span> → Prof. Carlos</td></tr>
+            <tr><td>3</td><td>Banco de Dados</td><td><span style="color:var(--accent5)">2</span> → Profa. Ana</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="tip" style="margin-top:16px">
+      <span class="tip-icon">🔗</span>
+      <div class="tip-content">A coluna <strong>professor_id</strong> na tabela disciplina é uma <strong>FOREIGN KEY (chave estrangeira)</strong> — ela "aponta" para o id da tabela professor. Assim o banco sabe qual professor pertence a cada disciplina!</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- DISC: REPO -->
+<section class="step-section" id="disc-repo">
+  <div class="step-header">
+    <div class="step-number sn-green">3.2</div>
+    <div>
+      <div class="step-title">Repository — Derived Query</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Novidade: consulta personalizada pelo nome do método!</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">🪄 Derived Queries — Magia do Spring Data!</div>
+      <p>O Spring Data JPA consegue <strong style="color:var(--text)">gerar SQL automaticamente pelo nome do método</strong>! Se você escrever <code style="color:var(--accent6)">findByProfessorId</code>, ele entende: "faça um SELECT WHERE professor_id = ?".</p>
+    </div>
+
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">repository/DisciplinaRepository.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.repository;</span>
+
+<span class="pkg">import br.com.alunoonline.api.model.Disciplina;</span>
+<span class="pkg">import org.springframework.data.jpa.repository.JpaRepository;</span>
+<span class="pkg">import org.springframework.stereotype.Repository;</span>
+<span class="pkg">import java.util.List;</span>
+
+<span class="an">@Repository</span>
+<span class="kw">public interface</span> <span class="tp">DisciplinaRepository</span> <span class="kw">extends</span> <span class="tp">JpaRepository</span>&lt;<span class="tp">Disciplina</span>, <span class="tp">Long</span>&gt; {
+
+    <span class="cm">// O Spring gera o SQL: SELECT * FROM disciplina WHERE professor_id = ?</span>
+    <span class="tp">List</span>&lt;<span class="tp">Disciplina</span>&gt; <span class="fn">findByProfessorId</span>(<span class="tp">Long</span> professorId);
+}</pre>
+    </div>
+
+    <div class="analogy">
+      <div class="analogy-title">Como funciona a "magia"?</div>
+      <p style="color:var(--text-dim)">O Spring Data lê o nome do método e desmonta assim:<br>
+        <code style="color:var(--fn)">find</code> → SELECT<br>
+        <code style="color:var(--fn)">By</code> → WHERE<br>
+        <code style="color:var(--fn)">ProfessorId</code> → professor_id = ?<br>
+        <strong style="color:var(--text)">Resultado:</strong> <code>SELECT * FROM disciplina WHERE professor_id = ?</code></p>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- DISC: SERVICE + CONTROLLER -->
+<section class="step-section" id="disc-service">
+  <div class="step-header">
+    <div class="step-number sn-yellow">3.3</div>
+    <div>
+      <div class="step-title">Service + Controller</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Completando a Disciplina</div>
+    </div>
+  </div>
+
+  <div class="card" id="disc-controller">
+    <h4 style="color:var(--accent5);margin-bottom:12px">⚙️ DisciplinaService.java</h4>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">service/DisciplinaService.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.service;</span>
+
+<span class="pkg">import br.com.alunoonline.api.model.Disciplina;</span>
+<span class="pkg">import br.com.alunoonline.api.repository.DisciplinaRepository;</span>
+<span class="pkg">import org.springframework.beans.factory.annotation.Autowired;</span>
+<span class="pkg">import org.springframework.stereotype.Service;</span>
+<span class="pkg">import java.util.List;</span>
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="tp">DisciplinaService</span> {
+
+    <span class="an">@Autowired</span>
+    <span class="tp">DisciplinaRepository</span> disciplinaRepository;
+
+    <span class="kw">public void</span> <span class="fn">criarDisciplina</span>(<span class="tp">Disciplina</span> disciplina) {
+        disciplinaRepository.<span class="fn">save</span>(disciplina);
+    }
+
+    <span class="kw">public</span> <span class="tp">List</span>&lt;<span class="tp">Disciplina</span>&gt; <span class="fn">listarDisciplinarDoProf</span>(<span class="tp">Long</span> professorId) {
+        <span class="kw">return</span> disciplinaRepository.<span class="fn">findByProfessorId</span>(professorId);
+    }
+}</pre>
+    </div>
+
+    <h4 style="color:var(--accent);margin:24px 0 12px">🎮 DisciplinaController.java</h4>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">controller/DisciplinaController.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.controller;</span>
+
+<span class="pkg">import br.com.alunoonline.api.model.Disciplina;</span>
+<span class="pkg">import br.com.alunoonline.api.service.DisciplinaService;</span>
+<span class="pkg">import org.springframework.beans.factory.annotation.Autowired;</span>
+<span class="pkg">import org.springframework.http.HttpStatus;</span>
+<span class="pkg">import org.springframework.web.bind.annotation.*;</span>
+<span class="pkg">import java.util.List;</span>
+
+<span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/disciplinas"</span>)
+<span class="kw">public class</span> <span class="tp">DisciplinaController</span> {
+
+    <span class="an">@Autowired</span>
+    <span class="tp">DisciplinaService</span> disciplinaService;
+
+    <span class="an">@PostMapping</span>
+    <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">CREATED</span>)
+    <span class="kw">public void</span> <span class="fn">criarDisciplina</span>(<span class="an">@RequestBody</span> <span class="tp">Disciplina</span> disciplina) {
+        disciplinaService.<span class="fn">criarDisciplina</span>(disciplina);
+    }
+
+    <span class="an">@GetMapping</span>(<span class="st">"/professor/{professorId}"</span>)
+    <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">OK</span>)
+    <span class="kw">public</span> <span class="tp">List</span>&lt;<span class="tp">Disciplina</span>&gt; <span class="fn">listarDisciplinasDoProf</span>(
+            <span class="an">@PathVariable</span> <span class="tp">Long</span> professorId) {
+        <span class="kw">return</span> disciplinaService.<span class="fn">listarDisciplinarDoProf</span>(professorId);
+    }
+}</pre>
+    </div>
+
+    <table class="endpoint-table">
+      <thead><tr><th>Método</th><th>URL</th><th>Ação</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method-badge post">POST</span></td><td><code>/disciplinas</code></td><td>Criar disciplina</td><td>201 Created</td></tr>
+        <tr><td><span class="method-badge get">GET</span></td><td><code>/disciplinas/professor/{id}</code></td><td>Listar disciplinas de um professor</td><td>200 OK</td></tr>
+      </tbody>
+    </table>
+
+    <div class="warning">
+      <span class="warning-icon">⚠️</span>
+      <div style="color:var(--text-dim);font-size:0.9rem"><strong style="color:var(--accent5)">Atenção ao criar Disciplina!</strong> No JSON do POST, você precisa enviar o professor como objeto com ID:<br><code>{ "nome": "Backend", "cargaHoraria": 80, "professor": { "id": 1 } }</code></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════╗ -->
+<!-- ║                 CAPÍTULO 4: MATRÍCULA                       ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════╝ -->
+
+<div class="chapter-divider" id="cap-mat">
+  <span class="chapter-icon">📝</span>
+  <div class="chapter-number">Capítulo 4</div>
+  <h2 class="grad-mat">Matrícula de Aluno</h2>
+  <p class="chapter-subtitle">A entidade mais complexa — Enum, regras de negócio, PATCH</p>
+</div>
+
+<!-- MAT: MODEL -->
+<section class="step-section" id="mat-model">
+  <div class="step-header">
+    <div class="step-number sn-purple">4.1</div>
+    <div>
+      <div class="step-title">Model + Enum</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Novidades: Dois @ManyToOne + @Enumerated</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">📝 MatriculaAluno — a tabela que conecta tudo!</div>
+      <p>A matrícula é uma entidade que liga um <strong style="color:var(--accent2)">Aluno</strong> a uma <strong style="color:var(--accent5)">Disciplina</strong>, com notas e um status (MATRICULADO, APROVADO, REPROVADO, TRANCADO). É como o <strong style="color:var(--text)">"casamento" entre aluno e disciplina</strong>.</p>
+    </div>
+
+    <h4 style="margin:16px 0 10px;color:var(--accent6)">🏷️ Primeiro, o Enum de Status:</h4>
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">enums/MatriculaAlunoStatusEnum.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.enums;</span>
+
+<span class="kw">public enum</span> <span class="tp">MatriculaAlunoStatusEnum</span> {
+    <span class="nb">MATRICULADO</span>,   <span class="cm">// Estado inicial</span>
+    <span class="nb">APROVADO</span>,      <span class="cm">// Média ≥ 7.0</span>
+    <span class="nb">REPROVADO</span>,     <span class="cm">// Média < 7.0</span>
+    <span class="nb">TRANCADO</span>;      <span class="cm">// Matrícula trancada</span>
+}</pre>
+    </div>
+
+    <div class="analogy">
+      <div class="analogy-title">O que é um Enum?</div>
+      <p style="color:var(--text-dim)">Enum é uma <strong style="color:var(--text)">lista fixa de opções</strong>. Em vez de usar Strings como "APROVADO" (que pode ser digitada errada como "aprovado" ou "APROVDO"), o Enum garante que só existem 4 valores possíveis. É como um <strong style="color:var(--text)">menu fechado</strong> — só pode escolher o que está lá!</p>
+    </div>
+
+    <h4 style="margin:24px 0 10px;color:var(--accent6)">📝 O Model MatriculaAluno:</h4>
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">model/MatriculaAluno.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.model;</span>
+
+<span class="pkg">import br.com.alunoonline.api.enums.MatriculaAlunoStatusEnum;</span>
+<span class="pkg">import jakarta.persistence.*;</span>
+<span class="pkg">import lombok.*;</span>
+
+<span class="an">@AllArgsConstructor</span>
+<span class="an">@NoArgsConstructor</span>
+<span class="an">@Data</span>
+<span class="an">@Table</span>(name = <span class="st">"matricula_aluno"</span>)
+<span class="an">@Entity</span>
+<span class="kw">public class</span> <span class="tp">MatriculaAluno</span> {
+
+    <span class="an">@Id</span>
+    <span class="an">@GeneratedValue</span>(strategy = <span class="tp">GenerationType</span>.<span class="nb">IDENTITY</span>)
+    <span class="kw">private</span> <span class="tp">Long</span> id;
+
+    <span class="an">@ManyToOne</span>
+    <span class="an">@JoinColumn</span>(name = <span class="st">"aluno_id"</span>)
+    <span class="kw">private</span> <span class="tp">Aluno</span> aluno;          <span class="cm">// FK → aluno</span>
+
+    <span class="an">@ManyToOne</span>
+    <span class="an">@JoinColumn</span>(name = <span class="st">"disciplina_id"</span>)
+    <span class="kw">private</span> <span class="tp">Disciplina</span> disciplina;  <span class="cm">// FK → disciplina</span>
+
+    <span class="kw">private</span> <span class="tp">Double</span> nota1;
+    <span class="kw">private</span> <span class="tp">Double</span> nota2;
+
+<span class="anno-line">    <span class="an">@Enumerated</span>(<span class="tp">EnumType</span>.<span class="nb">STRING</span>)  <span class="cm">// Salva "MATRICULADO" como texto no banco</span><span class="anno-tooltip"><strong>@Enumerated(EnumType.STRING)</strong>Salva o enum como texto legível no banco de dados (ex: "APROVADO"). Sem essa anotação, salvaria como número (0, 1, 2, 3), que é confuso!</span></span>
+    <span class="kw">private</span> <span class="tp">MatriculaAlunoStatusEnum</span> status;
+}</pre>
+    </div>
+
+    <!-- DB Visualization -->
+    <h4 style="margin:20px 0 12px;color:var(--accent4)">🗄️ No banco de dados:</h4>
+    <div class="db-table">
+      <div class="db-table-header">🐘 Tabela: matricula_aluno</div>
+      <table>
+        <thead><tr><th>id</th><th>aluno_id 🔗</th><th>disciplina_id 🔗</th><th>nota1</th><th>nota2</th><th>status</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>1 (Maria)</td><td>1 (Backend)</td><td>8.0</td><td>7.5</td><td><span style="color:var(--accent3)">APROVADO</span></td></tr>
+          <tr><td>2</td><td>1 (Maria)</td><td>2 (Frontend)</td><td>5.0</td><td>4.0</td><td><span style="color:var(--accent2)">REPROVADO</span></td></tr>
+          <tr><td>3</td><td>2 (João)</td><td>1 (Backend)</td><td>—</td><td>—</td><td><span style="color:var(--accent5)">MATRICULADO</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- MAT: SERVICE -->
+<section class="step-section" id="mat-service">
+  <div class="step-header">
+    <div class="step-number sn-yellow">4.2</div>
+    <div>
+      <div class="step-title">MatriculaAlunoService</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">O Service mais complexo — regras de negócio reais!</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">⚙️ Regras de Negócio da Matrícula</div>
+      <p>Este é o Service mais rico do projeto! Ele implementa:</p>
+    </div>
+
+    <div class="annotation-grid" style="margin:12px 0 20px">
+      <div class="annotation-card"><div class="anno-name" style="color:var(--accent3)">📝 Criar</div><div class="anno-desc">Status começa como MATRICULADO automaticamente</div></div>
+      <div class="annotation-card"><div class="anno-name" style="color:var(--accent2)">🔒 Trancar</div><div class="anno-desc">Só se status atual for MATRICULADO</div></div>
+      <div class="annotation-card"><div class="anno-name" style="color:var(--accent5)">📊 Notas</div><div class="anno-desc">Atualiza notas e calcula média → APROVADO ou REPROVADO</div></div>
+      <div class="annotation-card"><div class="anno-name" style="color:var(--accent4)">📋 Histórico</div><div class="anno-desc">Lista todas as disciplinas com notas e status do aluno</div></div>
+    </div>
+
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">service/MatriculaAlunoService.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30<br>31<br>32<br>33<br>34<br>35<br>36<br>37<br>38<br>39<br>40<br>41<br>42<br>43<br>44<br>45<br>46<br>47<br>48<br>49<br>50<br>51<br>52<br>53<br>54<br>55<br>56<br>57<br>58<br>59<br>60<br>61</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.service;</span>
+
+<span class="pkg">import br.com.alunoonline.api.enums.MatriculaAlunoStatusEnum;</span>
+<span class="pkg">import br.com.alunoonline.api.model.MatriculaAluno;</span>
+<span class="pkg">import br.com.alunoonline.api.repository.MatriculaAlunoRepository;</span>
+<span class="pkg">import org.springframework.beans.factory.annotation.Autowired;</span>
+<span class="pkg">import org.springframework.http.HttpStatus;</span>
+<span class="pkg">import org.springframework.stereotype.Service;</span>
+<span class="pkg">import org.springframework.web.server.ResponseStatusException;</span>
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="tp">MatriculaAlunoService</span> {
+
+    <span class="kw">private static final</span> <span class="tp">Double</span> <span class="nb">MEDIA_PARA_APROVACAO</span> = <span class="num">7.0</span>;
+
+    <span class="an">@Autowired</span>
+    <span class="tp">MatriculaAlunoRepository</span> matriculaAlunoRepository;
+
+    <span class="cm">// ═══════════════ CRIAR MATRÍCULA ═══════════════</span>
+    <span class="kw">public void</span> <span class="fn">criarMatricula</span>(<span class="tp">MatriculaAluno</span> matriculaAluno) {
+        matriculaAluno.<span class="fn">setStatus</span>(
+            <span class="tp">MatriculaAlunoStatusEnum</span>.<span class="nb">MATRICULADO</span>);  <span class="cm">// Status automático!</span>
+        matriculaAlunoRepository.<span class="fn">save</span>(matriculaAluno);
+    }
+
+    <span class="cm">// ═══════════════ TRANCAR MATRÍCULA ═══════════════</span>
+    <span class="kw">public void</span> <span class="fn">trancarMatricula</span>(<span class="tp">Long</span> id) {
+        <span class="tp">MatriculaAluno</span> matricula =
+            matriculaAlunoRepository.<span class="fn">findById</span>(id)
+                .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="tp">ResponseStatusException</span>(
+                    <span class="tp">HttpStatus</span>.<span class="nb">NOT_FOUND</span>,
+                    <span class="st">"Matricula não encontrada"</span>));
+
+        <span class="cm">// Só pode trancar se estiver MATRICULADO!</span>
+        <span class="kw">if</span> (matricula.<span class="fn">getStatus</span>()
+                .<span class="fn">equals</span>(<span class="tp">MatriculaAlunoStatusEnum</span>.<span class="nb">MATRICULADO</span>)) {
+            matricula.<span class="fn">setStatus</span>(
+                <span class="tp">MatriculaAlunoStatusEnum</span>.<span class="nb">TRANCADO</span>);
+            matriculaAlunoRepository.<span class="fn">save</span>(matricula);
+        } <span class="kw">else</span> {
+            <span class="kw">throw new</span> <span class="tp">ResponseStatusException</span>(
+                <span class="tp">HttpStatus</span>.<span class="nb">BAD_REQUEST</span>,
+                <span class="st">"Só é possível trancar com status MATRICULADO"</span>);
+        }
+    }
+
+    <span class="cm">// ═══════════════ ATUALIZAR NOTAS ═══════════════</span>
+    <span class="kw">public void</span> <span class="fn">atualizarNotas</span>(<span class="tp">Long</span> id,
+                               <span class="tp">AtualizarNotasRequestDTO</span> dto) {
+        <span class="tp">MatriculaAluno</span> matricula = <span class="fn">buscarOuLancarExcecao</span>(id);
+
+        <span class="kw">if</span> (dto.<span class="fn">getNota1</span>() != <span class="kw">null</span>)
+            matricula.<span class="fn">setNota1</span>(dto.<span class="fn">getNota1</span>());
+        <span class="kw">if</span> (dto.<span class="fn">getNota2</span>() != <span class="kw">null</span>)
+            matricula.<span class="fn">setNota2</span>(dto.<span class="fn">getNota2</span>());
+
+        <span class="cm">// Se ambas as notas existem, calcula a média!</span>
+        <span class="kw">if</span> (matricula.<span class="fn">getNota1</span>() != <span class="kw">null</span>
+            && matricula.<span class="fn">getNota2</span>() != <span class="kw">null</span>) {
+            <span class="tp">Double</span> media = (matricula.<span class="fn">getNota1</span>()
+                          + matricula.<span class="fn">getNota2</span>()) / <span class="num">2</span>;
+            matricula.<span class="fn">setStatus</span>(
+                media >= <span class="nb">MEDIA_PARA_APROVACAO</span>
+                    ? <span class="tp">MatriculaAlunoStatusEnum</span>.<span class="nb">APROVADO</span>
+                    : <span class="tp">MatriculaAlunoStatusEnum</span>.<span class="nb">REPROVADO</span>);
+        }
+
+        matriculaAlunoRepository.<span class="fn">save</span>(matricula);
+    }
+}</pre>
+    </div>
+
+    <div class="tip">
+      <span class="tip-icon">🧮</span>
+      <div class="tip-content"><strong>Regra de aprovação:</strong> Se nota1 e nota2 existem → calcula média = (nota1 + nota2) / 2. Se média ≥ 7.0 → <strong style="color:var(--accent3)">APROVADO</strong>. Se média < 7.0 → <strong style="color:var(--accent2)">REPROVADO</strong>.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- MAT: CONTROLLER -->
+<section class="step-section" id="mat-controller">
+  <div class="step-header">
+    <div class="step-number sn-main">4.3</div>
+    <div>
+      <div class="step-title">MatriculaAlunoController</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Novidade: @PatchMapping — atualização parcial!</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">🔧 PUT vs PATCH — qual a diferença?</div>
+      <p><strong style="color:var(--accent5)">PUT</strong> = atualiza o recurso <strong>inteiro</strong> (todos os campos).<br>
+      <strong style="color:var(--accent3)">PATCH</strong> = atualiza <strong>parcialmente</strong> (só os campos enviados).<br>
+      Para notas, usamos PATCH porque podemos enviar só a nota1, ou só a nota2, ou ambas!</p>
+    </div>
+
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">controller/MatriculaAlunoController.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30<br>31<br>32<br>33<br>34<br>35<br>36</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.controller;</span>
+
+<span class="pkg">import br.com.alunoonline.api.dtos.*;</span>
+<span class="pkg">import br.com.alunoonline.api.model.MatriculaAluno;</span>
+<span class="pkg">import br.com.alunoonline.api.service.MatriculaAlunoService;</span>
+<span class="pkg">import org.springframework.beans.factory.annotation.Autowired;</span>
+<span class="pkg">import org.springframework.http.HttpStatus;</span>
+<span class="pkg">import org.springframework.web.bind.annotation.*;</span>
+
+<span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/matriculas"</span>)
+<span class="kw">public class</span> <span class="tp">MatriculaAlunoController</span> {
+
+    <span class="an">@Autowired</span>
+    <span class="tp">MatriculaAlunoService</span> matriculaAlunoService;
+
+    <span class="an">@PostMapping</span>
+    <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">CREATED</span>)
+    <span class="kw">public void</span> <span class="fn">criarMatricula</span>(<span class="an">@RequestBody</span> <span class="tp">MatriculaAluno</span> m) {
+        matriculaAlunoService.<span class="fn">criarMatricula</span>(m);
+    }
+
+    <span class="an">@PatchMapping</span>(<span class="st">"/trancar/{id}"</span>)        <span class="cm">// PATCH (parcial!)</span>
+    <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">NO_CONTENT</span>)
+    <span class="kw">public void</span> <span class="fn">trancarMatricula</span>(<span class="an">@PathVariable</span> <span class="tp">Long</span> id) {
+        matriculaAlunoService.<span class="fn">trancarMatricula</span>(id);
+    }
+
+    <span class="an">@PatchMapping</span>(<span class="st">"/atualizar-notas/{id}"</span>)
+    <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">NO_CONTENT</span>)
+    <span class="kw">public void</span> <span class="fn">atualizarNotas</span>(<span class="an">@PathVariable</span> <span class="tp">Long</span> id,
+            <span class="an">@RequestBody</span> <span class="tp">AtualizarNotasRequestDTO</span> dto) {
+        matriculaAlunoService.<span class="fn">atualizarNotas</span>(id, dto);
+    }
+
+    <span class="an">@GetMapping</span>(<span class="st">"/emitir-historico/{alunoId}"</span>)
+    <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">OK</span>)
+    <span class="kw">public</span> <span class="tp">HistoricoAlunoResponseDTO</span> <span class="fn">emitirHistorico</span>(
+            <span class="an">@PathVariable</span> <span class="tp">Long</span> alunoId) {
+        <span class="kw">return</span> matriculaAlunoService.<span class="fn">emitirHistorico</span>(alunoId);
+    }
+}</pre>
+    </div>
+
+    <table class="endpoint-table">
+      <thead><tr><th>Método</th><th>URL</th><th>Ação</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method-badge post">POST</span></td><td><code>/matriculas</code></td><td>Criar matrícula</td><td>201</td></tr>
+        <tr><td><span class="method-badge patch">PATCH</span></td><td><code>/matriculas/trancar/{id}</code></td><td>Trancar matrícula</td><td>204</td></tr>
+        <tr><td><span class="method-badge patch">PATCH</span></td><td><code>/matriculas/atualizar-notas/{id}</code></td><td>Atualizar notas</td><td>204</td></tr>
+        <tr><td><span class="method-badge get">GET</span></td><td><code>/matriculas/emitir-historico/{alunoId}</code></td><td>Emitir histórico</td><td>200</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- MAT: DEMO COMPLETA -->
+<section class="step-section" id="mat-demo">
+  <div class="step-header">
+    <div class="step-number sn-purple">▶</div>
+    <div>
+      <div class="step-title">Demo: Fluxo Completo da Matrícula</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Do cadastro ao histórico — simulação animada!</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p style="color:var(--text-dim);margin-bottom:16px">Veja o fluxo completo: criar aluno → professor → disciplina → matrícula → notas → histórico</p>
+    <button class="btn-demo btn-spring" onclick="runFullDemo()" id="fullDemoBtn">▶️ Rodar Simulação Completa</button>
+
+    <div class="demo-terminal">
+      <div class="term-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <span>Swagger UI — Fluxo Completo</span>
+      </div>
+      <div class="demo-body" id="fullDemoBody" style="min-height:350px">
+        <div style="color:var(--text-dim);font-style:italic">Clique em "Rodar Simulação Completa" para ver todo o fluxo...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ╔══════════════════════════════════════════════════════════════╗ -->
+<!-- ║                    CAPÍTULO 5: DTOs                         ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════╝ -->
+
+<div class="chapter-divider" id="cap-dto">
+  <span class="chapter-icon">📦</span>
+  <div class="chapter-number">Capítulo 5</div>
+  <h2 class="grad-dto">DTOs — Data Transfer Objects</h2>
+  <p class="chapter-subtitle">Por que não usamos o Model diretamente? Entenda agora!</p>
+</div>
+
+<section class="step-section" id="dto-intro">
+  <div class="step-header">
+    <div class="step-number sn-green">5.1</div>
+    <div>
+      <div class="step-title">O que é DTO e por que usar?</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Agora que você já sabe Model, hora de evoluir!</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">📦 DTO = Data Transfer Object</div>
+      <p>Um DTO é uma classe <strong style="color:var(--text)">simples</strong> que serve apenas para <strong>transportar dados</strong> entre camadas. Diferente do Model (que representa a tabela), o DTO representa <strong>o que o cliente envia ou recebe</strong>.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="analogy-title">Por que não usar o Model direto?</div>
+      <p style="color:var(--text-dim)">Imagine que a tabela <code>aluno</code> tem 20 campos, mas para atualizar as notas você só precisa de <strong style="color:var(--text)">2 campos (nota1 e nota2)</strong>. Faz sentido obrigar o cliente a enviar todos os 20? Não! O DTO permite enviar <strong>só o necessário</strong>. É como preencher apenas os campos relevantes de um formulário, em vez de um formulário gigante.</p>
+    </div>
+
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div class="tip-content"><strong>Quando começamos a usar DTOs neste projeto?</strong> Só aqui no Capítulo 5! Primeiro aprendemos com o Model direto para entender bem, e agora evoluímos para DTOs. É mais fácil assim!</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<section class="step-section" id="dto-code">
+  <div class="step-header">
+    <div class="step-number sn-blue">5.2</div>
+    <div>
+      <div class="step-title">Os DTOs do Projeto</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Request DTO vs Response DTO</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h4 style="color:var(--accent5);margin-bottom:12px">📥 AtualizarNotasRequestDTO — o que o cliente ENVIA</h4>
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">dtos/AtualizarNotasRequestDTO.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.dtos;</span>
+
+<span class="pkg">import lombok.Data;</span>
+
+<span class="an">@Data</span>
+<span class="kw">public class</span> <span class="tp">AtualizarNotasRequestDTO</span> {
+    <span class="kw">private</span> <span class="tp">Double</span> nota1;
+    <span class="kw">private</span> <span class="tp">Double</span> nota2;
+}</pre>
+    </div>
+
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div class="tip-content">Percebe a diferença? O Model <code>MatriculaAluno</code> tem id, aluno, disciplina, nota1, nota2 e status. Mas para atualizar notas, o cliente só precisa enviar <strong>nota1</strong> e <strong>nota2</strong>!</div>
+    </div>
+
+    <h4 style="color:var(--accent4);margin:28px 0 12px">📤 HistoricoAlunoResponseDTO — o que a API DEVOLVE</h4>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">dtos/HistoricoAlunoResponseDTO.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <pre>
+<span class="an">@Data</span>
+<span class="kw">public class</span> <span class="tp">HistoricoAlunoResponseDTO</span> {
+    <span class="kw">private</span> <span class="tp">String</span> nomeAluno;
+    <span class="kw">private</span> <span class="tp">String</span> emailAluno;
+    <span class="kw">private</span> <span class="tp">String</span> cpfAluno;
+    <span class="kw">private</span> <span class="tp">List</span>&lt;<span class="tp">DisciplinasAlunoResponseDTO</span>&gt; disciplinas;
+}</pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">dtos/DisciplinasAlunoResponseDTO.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <pre>
+<span class="an">@Data</span>
+<span class="kw">public class</span> <span class="tp">DisciplinasAlunoResponseDTO</span> {
+    <span class="kw">private</span> <span class="tp">String</span> nomeDisciplina;
+    <span class="kw">private</span> <span class="tp">String</span> nomeProfessor;
+    <span class="kw">private</span> <span class="tp">Double</span> nota1;
+    <span class="kw">private</span> <span class="tp">Double</span> nota2;
+    <span class="kw">private</span> <span class="tp">Double</span> media;
+    <span class="kw">private</span> <span class="tp">MatriculaAlunoStatusEnum</span> status;
+}</pre>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- DTO: HISTORICO DEMO -->
+<section class="step-section" id="dto-historico">
+  <div class="step-header">
+    <div class="step-number sn-yellow">5.3</div>
+    <div>
+      <div class="step-title">Histórico Acadêmico — JSON de Resposta</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Veja o JSON que a API retorna ao emitir o histórico</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p style="color:var(--text-dim);margin-bottom:16px">Ao fazer <span class="method-badge get">GET</span> <code>/matriculas/emitir-historico/1</code>, a API retorna:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">Resposta JSON — 200 OK</span><span class="lang-badge json">JSON</span></div>
+      </div>
+      <pre>
+{
+  <span class="fn">"nomeAluno"</span>: <span class="st">"Maria Silva"</span>,
+  <span class="fn">"emailAluno"</span>: <span class="st">"maria@email.com"</span>,
+  <span class="fn">"cpfAluno"</span>: <span class="st">"111.222.333-44"</span>,
+  <span class="fn">"disciplinas"</span>: [
+    {
+      <span class="fn">"nomeDisciplina"</span>: <span class="st">"Backend com Spring Boot"</span>,
+      <span class="fn">"nomeProfessor"</span>: <span class="st">"Prof. Carlos"</span>,
+      <span class="fn">"nota1"</span>: <span class="num">8.0</span>,
+      <span class="fn">"nota2"</span>: <span class="num">7.5</span>,
+      <span class="fn">"media"</span>: <span class="num">7.75</span>,
+      <span class="fn">"status"</span>: <span class="st">"APROVADO"</span> <span class="cm">✅</span>
+    },
+    {
+      <span class="fn">"nomeDisciplina"</span>: <span class="st">"Frontend com React"</span>,
+      <span class="fn">"nomeProfessor"</span>: <span class="st">"Profa. Ana"</span>,
+      <span class="fn">"nota1"</span>: <span class="num">5.0</span>,
+      <span class="fn">"nota2"</span>: <span class="num">4.0</span>,
+      <span class="fn">"media"</span>: <span class="num">4.5</span>,
+      <span class="fn">"status"</span>: <span class="st">"REPROVADO"</span> <span class="cm">❌</span>
+    }
+  ]
+}</pre>
+    </div>
+
+    <div class="analogy">
+      <div class="analogy-title">DTO montou tudo bonito!</div>
+      <p style="color:var(--text-dim)">Sem DTOs, a API retornaria todos os IDs, objetos aninhados com dados desnecessários. O DTO <strong style="color:var(--text)">formata os dados exatamente como o cliente precisa</strong> — nomes em vez de IDs, média calculada, sem informações internas.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════ -->
+<!-- FINAL -->
+<!-- ════════════════════════════════════════ -->
+<section class="step-section" style="text-align:center;padding:60px 20px">
+  <div style="font-size:3.5rem;margin-bottom:16px;animation:bounce 2s ease-in-out infinite;display:inline-block">🎓</div>
+  <h2 style="font-size:2rem;font-weight:900;margin-bottom:16px;background:linear-gradient(135deg,var(--spring),var(--accent4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">API Completa!</h2>
+  <p style="color:var(--text-dim);max-width:550px;margin:0 auto 30px;font-size:1.05rem">Você construiu uma API REST completa com <strong style="color:var(--accent5)">4 entidades</strong>, <strong style="color:var(--accent3)">3 DTOs</strong>, <strong style="color:var(--accent)">regras de negócio</strong> e <strong style="color:var(--accent4)">relacionamentos no banco</strong>. Parabéns!</p>
+
+  <div class="card" style="text-align:left;max-width:600px;margin:0 auto">
+    <h3 style="margin-bottom:16px;color:var(--accent5)">📋 Resumo de tudo que você aprendeu</h3>
+    <div style="display:grid;gap:10px;color:var(--text-dim);font-size:0.92rem">
+      <div style="display:flex;gap:10px"><span style="color:var(--accent3)">✅</span> Criar entidades JPA com @Entity, @Id, @Table</div>
+      <div style="display:flex;gap:10px"><span style="color:var(--accent3)">✅</span> Usar Lombok (@Data, @NoArgsConstructor, etc.)</div>
+      <div style="display:flex;gap:10px"><span style="color:var(--accent3)">✅</span> Criar repositórios com JpaRepository</div>
+      <div style="display:flex;gap:10px"><span style="color:var(--accent3)">✅</span> Derived Queries (findByProfessorId)</div>
+      <div style="display:flex;gap:10px"><span style="color:var(--accent3)">✅</span> Services com regras de negócio</div>
+      <div style="display:flex;gap:10px"><span style="color:var(--accent3)">✅</span> Controllers REST (GET, POST, PUT, PATCH)</div>
+      <div style="display:flex;gap:10px"><span style="color:var(--accent3)">✅</span> Relacionamentos @ManyToOne com FK</div>
+      <div style="display:flex;gap:10px"><span style="color:var(--accent3)">✅</span> Enum com @Enumerated</div>
+      <div style="display:flex;gap:10px"><span style="color:var(--accent3)">✅</span> DTOs para Request e Response</div>
+      <div style="display:flex;gap:10px"><span style="color:var(--accent3)">✅</span> Tratamento de erros (404, 400)</div>
+      <div style="display:flex;gap:10px"><span style="color:var(--accent3)">✅</span> Cálculo automático de média e aprovação</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Feito com <span class="heart">💜</span> para os alunos da <a href="#">UNIESP</a> — João Pessoa, PB<br>
+  <span style="font-size:0.75rem;margin-top:8px;display:block">Disciplina de Backend — Java/Spring Boot</span>
+</footer>
+
+</div><!-- /container -->
+
+<script>
+// ═══════════════════════════════════════════
+// SCROLL PROGRESS
+// ═══════════════════════════════════════════
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  const pct=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100;
+  document.getElementById('progressBar').style.width=pct+'%';
+});
+
+// ═══════════════════════════════════════════
+// INTERSECTION OBSERVER — REVEAL ON SCROLL
+// ═══════════════════════════════════════════
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:0.12});
+document.querySelectorAll('.step-section,.stagger').forEach(s=>observer.observe(s));
+
+// ═══════════════════════════════════════════
+// SIDEBAR NAV
+// ═══════════════════════════════════════════
+function toggleSidebar(){
+  document.getElementById('sidebarNav').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function goTo(id){
+  toggleSidebar();
+  setTimeout(()=>{
+    document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});
+  },300);
+}
+
+// ═══════════════════════════════════════════
+// TOGGLER
+// ═══════════════════════════════════════════
+function toggleSection(header){
+  header.classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════
+// FLOW ANIMATION
+// ═══════════════════════════════════════════
+let flowRunning=false;
+async function runFlowDemo(){
+  if(flowRunning)return;
+  flowRunning=true;
+  const btn=document.getElementById('flowBtn');
+  btn.style.opacity='0.5';btn.style.pointerEvents='none';
+
+  // Reset
+  for(let i=0;i<=5;i++){
+    const el=document.getElementById('flow-'+i);
+    if(el)el.style.opacity='0.3';
+    const lbl=document.getElementById('flow-label-'+i);
+    if(lbl)lbl.style.opacity='0';
+  }
+
+  for(let i=0;i<=5;i++){
+    await new Promise(r=>setTimeout(r,600));
+    const el=document.getElementById('flow-'+i);
+    if(el){el.style.opacity='1';el.style.transition='opacity 0.5s';el.style.transform='scale(1.04)';
+      setTimeout(()=>el.style.transform='scale(1)',300)}
+    if(i<5){const lbl=document.getElementById('flow-label-'+i);if(lbl){lbl.style.opacity='1';lbl.style.transition='opacity 0.4s'}}
+  }
+
+  btn.style.opacity='1';btn.style.pointerEvents='auto';btn.textContent='🔄 Repetir';
+  flowRunning=false;
+}
+
+// ═══════════════════════════════════════════
+// INTERACTIVE DB — ALUNO
+// ═══════════════════════════════════════════
+let alunoDbData=[];
+let alunoDbId=0;
+function addAlunoDb(nome,cpf,email){
+  alunoDbId++;
+  alunoDbData.push({id:alunoDbId,nome,cpf,email});
+  renderAlunoDb();
+}
+function resetAlunoDb(){alunoDbData=[];alunoDbId=0;renderAlunoDb()}
+function renderAlunoDb(){
+  const tb=document.getElementById('alunoDbTable');
+  if(alunoDbData.length===0){
+    tb.innerHTML='<tr style="color:var(--text-dim);font-style:italic"><td colspan="4" style="text-align:center;padding:20px">Tabela vazia — use os botões para simular inserções!</td></tr>';
+    return;
+  }
+  tb.innerHTML=alunoDbData.map((a,i)=>`<tr class="db-row-new" style="animation-delay:${i*0.1}s"><td style="color:var(--accent5);font-weight:700">${a.id}</td><td>${a.nome}</td><td style="color:var(--text-dim)">${a.cpf}</td><td style="color:var(--text-dim)">${a.email}</td></tr>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// DEMO: ALUNO CRUD
+// ═══════════════════════════════════════════
+async function demoAlunoCrud(type){
+  const body=document.getElementById('alunoDemoBody');
+  body.innerHTML='';
+  let lines=[];
+
+  if(type==='post'){
+    lines=[
+      {delay:200,html:'<span class="method-post">POST</span> <span class="url">/alunos</span>'},
+      {delay:300,html:'<span class="dim">Content-Type: application/json</span>'},
+      {delay:200,html:''},
+      {delay:100,html:'<span class="arrow">→ Body:</span>'},
+      {delay:150,html:'{'},
+      {delay:100,html:'  <span class="json-key">"nome"</span>: <span class="json-val">"Maria Silva"</span>,'},
+      {delay:100,html:'  <span class="json-key">"cpf"</span>: <span class="json-val">"111.222.333-44"</span>,'},
+      {delay:100,html:'  <span class="json-key">"email"</span>: <span class="json-val">"maria@email.com"</span>'},
+      {delay:100,html:'}'},
+      {delay:600,html:''},
+      {delay:200,html:'<span class="arrow">← Response:</span> <span class="status-created">201 Created</span> ✅'},
+      {delay:100,html:'<span class="dim">Aluno salvo no banco de dados!</span>'},
+    ];
+  } else if(type==='getAll'){
+    lines=[
+      {delay:200,html:'<span class="method-get">GET</span> <span class="url">/alunos</span>'},
+      {delay:500,html:''},
+      {delay:200,html:'<span class="arrow">← Response:</span> <span class="status-ok">200 OK</span>'},
+      {delay:100,html:'['},
+      {delay:150,html:'  {<span class="json-key">"id"</span>:<span class="json-num">1</span>, <span class="json-key">"nome"</span>:<span class="json-val">"Maria Silva"</span>, <span class="json-key">"cpf"</span>:<span class="json-val">"111..."</span>, <span class="json-key">"email"</span>:<span class="json-val">"maria@..."</span>},'},
+      {delay:150,html:'  {<span class="json-key">"id"</span>:<span class="json-num">2</span>, <span class="json-key">"nome"</span>:<span class="json-val">"João Santos"</span>, <span class="json-key">"cpf"</span>:<span class="json-val">"555..."</span>, <span class="json-key">"email"</span>:<span class="json-val">"joao@..."</span>}'},
+      {delay:100,html:']'},
+    ];
+  } else if(type==='getOne'){
+    lines=[
+      {delay:200,html:'<span class="method-get">GET</span> <span class="url">/alunos/1</span>'},
+      {delay:500,html:''},
+      {delay:200,html:'<span class="arrow">← Response:</span> <span class="status-ok">200 OK</span>'},
+      {delay:100,html:'{'},
+      {delay:100,html:'  <span class="json-key">"id"</span>: <span class="json-num">1</span>,'},
+      {delay:100,html:'  <span class="json-key">"nome"</span>: <span class="json-val">"Maria Silva"</span>,'},
+      {delay:100,html:'  <span class="json-key">"cpf"</span>: <span class="json-val">"111.222.333-44"</span>,'},
+      {delay:100,html:'  <span class="json-key">"email"</span>: <span class="json-val">"maria@email.com"</span>'},
+      {delay:100,html:'}'},
+    ];
+  } else if(type==='put'){
+    lines=[
+      {delay:200,html:'<span class="method-put">PUT</span> <span class="url">/alunos/1</span>'},
+      {delay:300,html:'<span class="dim">Content-Type: application/json</span>'},
+      {delay:200,html:''},
+      {delay:100,html:'<span class="arrow">→ Body:</span>'},
+      {delay:100,html:'{'},
+      {delay:100,html:'  <span class="json-key">"nome"</span>: <span class="json-val">"Maria S. Oliveira"</span>,'},
+      {delay:100,html:'  <span class="json-key">"cpf"</span>: <span class="json-val">"111.222.333-44"</span>,'},
+      {delay:100,html:'  <span class="json-key">"email"</span>: <span class="json-val">"maria.novo@email.com"</span>'},
+      {delay:100,html:'}'},
+      {delay:600,html:''},
+      {delay:200,html:'<span class="arrow">← Response:</span> <span class="status-ok">204 No Content</span> ✅'},
+      {delay:100,html:'<span class="dim">Aluno atualizado com sucesso!</span>'},
+    ];
+  }
+
+  for(const line of lines){
+    await new Promise(r=>setTimeout(r,line.delay));
+    const div=document.createElement('div');
+    div.className='demo-line';
+    div.innerHTML=line.html;
+    body.appendChild(div);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>div.classList.add('show')));
+    body.scrollTop=body.scrollHeight;
+  }
+}
+
+// ═══════════════════════════════════════════
+// DEMO: FULL FLOW
+// ═══════════════════════════════════════════
+let fullDemoRunning=false;
+async function runFullDemo(){
+  if(fullDemoRunning)return;
+  fullDemoRunning=true;
+  const btn=document.getElementById('fullDemoBtn');
+  btn.style.opacity='0.5';btn.style.pointerEvents='none';
+  const body=document.getElementById('fullDemoBody');
+  body.innerHTML='';
+
+  const lines=[
+    {delay:300,html:'<span class="dim">═══ PASSO 1: Criar Aluno ═══</span>'},
+    {delay:200,html:'<span class="method-post">POST</span> <span class="url">/alunos</span>  →  { <span class="json-key">"nome"</span>: <span class="json-val">"Maria"</span>, <span class="json-key">"email"</span>: <span class="json-val">"maria@mail.com"</span> }'},
+    {delay:400,html:'<span class="status-created">201 Created</span> ✅  Aluno id=1 criado!'},
+    {delay:500,html:''},
+    {delay:300,html:'<span class="dim">═══ PASSO 2: Criar Professor ═══</span>'},
+    {delay:200,html:'<span class="method-post">POST</span> <span class="url">/professores</span>  →  { <span class="json-key">"nome"</span>: <span class="json-val">"Prof. Carlos"</span> }'},
+    {delay:400,html:'<span class="status-created">201 Created</span> ✅  Professor id=1 criado!'},
+    {delay:500,html:''},
+    {delay:300,html:'<span class="dim">═══ PASSO 3: Criar Disciplina ═══</span>'},
+    {delay:200,html:'<span class="method-post">POST</span> <span class="url">/disciplinas</span>  →  { <span class="json-key">"nome"</span>: <span class="json-val">"Backend"</span>, <span class="json-key">"professor"</span>: {<span class="json-key">"id"</span>:<span class="json-num">1</span>} }'},
+    {delay:400,html:'<span class="status-created">201 Created</span> ✅  Disciplina id=1 criada!'},
+    {delay:500,html:''},
+    {delay:300,html:'<span class="dim">═══ PASSO 4: Matricular Aluno ═══</span>'},
+    {delay:200,html:'<span class="method-post">POST</span> <span class="url">/matriculas</span>  →  { <span class="json-key">"aluno"</span>:{<span class="json-key">"id"</span>:<span class="json-num">1</span>}, <span class="json-key">"disciplina"</span>:{<span class="json-key">"id"</span>:<span class="json-num">1</span>} }'},
+    {delay:400,html:'<span class="status-created">201 Created</span> ✅  Matrícula id=1 (status: MATRICULADO)'},
+    {delay:500,html:''},
+    {delay:300,html:'<span class="dim">═══ PASSO 5: Lançar Notas ═══</span>'},
+    {delay:200,html:'<span class="method-patch">PATCH</span> <span class="url">/matriculas/atualizar-notas/1</span>  →  { <span class="json-key">"nota1"</span>: <span class="json-num">8.0</span>, <span class="json-key">"nota2"</span>: <span class="json-num">7.5</span> }'},
+    {delay:400,html:'<span class="status-ok">204 No Content</span> ✅  Média: (8.0+7.5)/2 = <span class="json-num">7.75</span> → <span style="color:#49cc90;font-weight:700">APROVADO!</span>'},
+    {delay:500,html:''},
+    {delay:300,html:'<span class="dim">═══ PASSO 6: Emitir Histórico ═══</span>'},
+    {delay:200,html:'<span class="method-get">GET</span> <span class="url">/matriculas/emitir-historico/1</span>'},
+    {delay:400,html:'<span class="status-ok">200 OK</span>'},
+    {delay:200,html:'{'},
+    {delay:100,html:'  <span class="json-key">"nomeAluno"</span>: <span class="json-val">"Maria"</span>,'},
+    {delay:100,html:'  <span class="json-key">"disciplinas"</span>: [{'},
+    {delay:100,html:'    <span class="json-key">"nomeDisciplina"</span>: <span class="json-val">"Backend"</span>,'},
+    {delay:100,html:'    <span class="json-key">"nota1"</span>: <span class="json-num">8.0</span>, <span class="json-key">"nota2"</span>: <span class="json-num">7.5</span>,'},
+    {delay:100,html:'    <span class="json-key">"media"</span>: <span class="json-num">7.75</span>,'},
+    {delay:100,html:'    <span class="json-key">"status"</span>: <span class="json-val">"APROVADO"</span> 🏆'},
+    {delay:100,html:'  }]'},
+    {delay:100,html:'}'},
+    {delay:500,html:''},
+    {delay:0,html:'<span style="color:var(--accent3);font-weight:700;font-size:1rem">🎉 Fluxo completo executado com sucesso!</span>'},
+  ];
+
+  for(const line of lines){
+    await new Promise(r=>setTimeout(r,line.delay));
+    const div=document.createElement('div');
+    div.className='demo-line';
+    div.innerHTML=line.html;
+    body.appendChild(div);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>div.classList.add('show')));
+    body.scrollTop=body.scrollHeight;
+  }
+
+  btn.style.opacity='1';btn.style.pointerEvents='auto';btn.textContent='🔄 Rodar de Novo';
+  fullDemoRunning=false;
+}
+</script>
+</body>
+</html>

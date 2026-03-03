@@ -314,6 +314,99 @@ footer{text-align:center;padding:50px 20px;color:var(--text-dim);font-size:0.82r
 footer a{color:var(--accent);text-decoration:none}
 footer .heart{color:var(--accent2);animation:pulse 2s ease-in-out infinite;display:inline-block}
 
+/* === PROFESSOR BANNER === */
+.prof-banner{
+  background:linear-gradient(135deg,rgba(108,99,255,0.08),rgba(109,179,63,0.06));
+  border:1px solid rgba(108,99,255,0.12);
+  border-radius:20px;padding:28px 32px;
+  margin-bottom:0;
+  display:flex;align-items:center;gap:24px;
+  position:relative;overflow:hidden;
+  animation:fadeSlideDown 0.8s ease 0.6s both;
+}
+.prof-banner::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--spring),var(--accent4),var(--accent5));
+}
+.prof-banner::after{
+  content:'';position:absolute;top:-50%;right:-10%;width:300px;height:300px;
+  background:radial-gradient(circle,rgba(108,99,255,0.06),transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+.prof-avatar{
+  width:72px;height:72px;border-radius:18px;
+  background:linear-gradient(135deg,var(--accent),var(--accent6));
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;flex-shrink:0;
+  box-shadow:0 8px 25px rgba(108,99,255,0.25);
+  position:relative;
+}
+.prof-avatar::after{
+  content:'';position:absolute;inset:-3px;border-radius:21px;
+  background:linear-gradient(135deg,var(--accent),var(--accent6));
+  opacity:0.3;z-index:-1;
+}
+.prof-info{flex:1;min-width:0}
+.prof-label{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:0.68rem;text-transform:uppercase;letter-spacing:2.5px;
+  color:var(--accent);font-weight:800;margin-bottom:4px;
+}
+.prof-label .verified{
+  width:16px;height:16px;border-radius:50%;
+  background:var(--accent);color:white;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:0.6rem;
+}
+.prof-name{
+  font-size:1.3rem;font-weight:900;
+  background:linear-gradient(135deg,var(--text),var(--accent4));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;line-height:1.3;
+}
+.prof-role{
+  font-size:0.82rem;color:var(--text-dim);margin-top:2px;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+}
+.prof-role .tag{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 10px;border-radius:50px;font-size:0.7rem;font-weight:700;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
+}
+.prof-links{
+  display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;
+}
+.prof-link{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 14px;border-radius:8px;font-size:0.72rem;font-weight:700;
+  color:var(--text-dim);background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  text-decoration:none;transition:all 0.25s;
+}
+.prof-link:hover{
+  background:rgba(108,99,255,0.1);border-color:rgba(108,99,255,0.25);
+  color:var(--text);transform:translateY(-1px);
+}
+.prof-link svg{width:14px;height:14px;fill:currentColor}
+.programa-ai-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 14px;border-radius:50px;
+  background:linear-gradient(135deg,rgba(108,99,255,0.12),rgba(167,139,250,0.08));
+  border:1px solid rgba(108,99,255,0.2);
+  font-size:0.72rem;font-weight:800;color:var(--accent6);
+  margin-top:8px;
+}
+.programa-ai-badge .ai-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--accent6);animation:pulse 2s ease-in-out infinite;
+}
+@media(max-width:640px){
+  .prof-banner{flex-direction:column;text-align:center;padding:24px 20px}
+  .prof-info{display:flex;flex-direction:column;align-items:center}
+  .prof-role{justify-content:center}
+  .prof-links{justify-content:center}
+}
+
 /* === RESPONSIVE === */
 @media(max-width:768px){
   .container{padding:14px}
@@ -392,6 +485,38 @@ footer .heart{color:var(--accent2);animation:pulse 2s ease-in-out infinite;displ
 <div class="container">
 
 <!-- ════════════════════════════════════════ -->
+<!-- PROFESSOR BANNER -->
+<!-- ════════════════════════════════════════ -->
+<div class="prof-banner" style="margin-top:60px">
+  <div class="prof-avatar">👨‍🏫</div>
+  <div class="prof-info">
+    <div class="prof-label">
+      Professor <span class="verified">✓</span>
+    </div>
+    <div class="prof-name">Kelson Almeida</div>
+    <div class="prof-role">
+      <span class="tag">🎓 UNIESP</span>
+      <span class="tag">☕ Backend Java/Spring</span>
+      <span class="tag">📍 João Pessoa, PB</span>
+    </div>
+    <div class="prof-links">
+      <a href="https://github.com/kelsonvictr" target="_blank" class="prof-link">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
+        GitHub
+      </a>
+      <a href="#" target="_blank" class="prof-link">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        Repositório do Projeto
+      </a>
+    </div>
+    <div class="programa-ai-badge">
+      <span class="ai-dot"></span>
+      Material da Programa AI — Cursos didáticos e práticos
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
 <!-- HERO -->
 <!-- ════════════════════════════════════════ -->
 <section class="hero" id="hero">
@@ -400,8 +525,8 @@ footer .heart{color:var(--accent2);animation:pulse 2s ease-in-out infinite;displ
   <h1>Aluno Online<br>API REST com Spring Boot</h1>
   <p class="subtitle">Um tutorial completo e passo a passo para construir sua primeira API REST do zero — do Model ao Controller, do banco de dados ao Swagger.</p>
   <div class="hero-stack">
-    <span class="stack-chip java">☕ Java 17</span>
-    <span class="stack-chip spring">🍃 Spring Boot 3.4</span>
+    <span class="stack-chip java">☕ Java 21</span>
+    <span class="stack-chip spring">🍃 Spring Boot (versão mais recente)</span>
     <span class="stack-chip pg">🐘 PostgreSQL</span>
     <span class="stack-chip swagger">📗 Swagger</span>
   </div>
@@ -538,6 +663,13 @@ footer .heart{color:var(--accent2);animation:pulse 2s ease-in-out infinite;displ
       <p>Acesse <strong style="color:var(--spring)"><a href="https://start.spring.io" target="_blank" style="color:var(--spring)">start.spring.io</a></strong> e gere o projeto com essas opções:</p>
     </div>
 
+    <div class="tip" style="margin-bottom:16px;border-left-color:var(--spring)">
+      <div class="tip-icon">🍃</div>
+      <div class="tip-content">
+        <strong>Sobre a versão do Spring Boot:</strong> Sempre utilize a <strong style="color:var(--spring)">versão mais recente disponível</strong> no Spring Initializr — ela já vem selecionada por padrão. Não fixe uma versão específica! O Spring evolui constantemente e versões novas trazem melhorias de segurança, desempenho e compatibilidade.
+      </div>
+    </div>
+
     <div class="annotation-grid" style="margin:20px 0">
       <div class="annotation-card">
         <div class="anno-name">📦 Project</div>
@@ -545,11 +677,11 @@ footer .heart{color:var(--accent2);animation:pulse 2s ease-in-out infinite;displ
       </div>
       <div class="annotation-card">
         <div class="anno-name">☕ Language</div>
-        <div class="anno-desc">Java 17</div>
+        <div class="anno-desc">Java 21</div>
       </div>
       <div class="annotation-card">
         <div class="anno-name">🍃 Spring Boot</div>
-        <div class="anno-desc">3.4.3</div>
+        <div class="anno-desc" style="font-size:0.8rem;line-height:1.4">Mais recente disponível<br><span style="color:var(--text-dim);font-size:0.72rem">Sempre use a versão<br>sugerida pelo Initializr</span></div>
       </div>
       <div class="annotation-card">
         <div class="anno-name">📂 Group</div>

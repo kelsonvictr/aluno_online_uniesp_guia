@@ -291,6 +291,61 @@ pre{padding:20px;margin:0;overflow-x:auto;font-family:'JetBrains Mono',monospace
 .layer-db{background:linear-gradient(135deg,rgba(69,183,209,0.15),rgba(69,183,209,0.05));border:1px solid rgba(69,183,209,0.2);color:var(--accent4)}
 .layer-arrow{text-align:center;color:var(--text-dim);font-size:0.8rem}
 
+/* === SYRINGE INJECTION DIAGRAM === */
+.injection-diagram{max-width:600px;margin:30px auto 0;display:flex;flex-direction:column;align-items:center;gap:0}
+.inj-row{display:flex;align-items:center;justify-content:center;width:100%;gap:0;position:relative}
+.inj-box{padding:18px 28px;border-radius:14px;text-align:center;font-weight:800;font-size:0.95rem;min-width:180px;position:relative;z-index:2;transition:all 0.3s}
+.inj-box:hover{transform:scale(1.04)}
+.inj-box .inj-annotation{font-family:'JetBrains Mono',monospace;font-size:0.7rem;font-weight:700;opacity:0.8;margin-top:4px;display:block}
+.inj-box.box-controller{background:linear-gradient(135deg,rgba(108,99,255,0.18),rgba(108,99,255,0.06));border:2px solid rgba(108,99,255,0.35);color:var(--accent)}
+.inj-box.box-service{background:linear-gradient(135deg,rgba(247,183,49,0.18),rgba(247,183,49,0.06));border:2px solid rgba(247,183,49,0.35);color:var(--accent5)}
+.inj-box.box-repo{background:linear-gradient(135deg,rgba(78,205,196,0.18),rgba(78,205,196,0.06));border:2px solid rgba(78,205,196,0.35);color:var(--accent3)}
+
+.inj-syringe-area{display:flex;flex-direction:column;align-items:center;padding:8px 0;position:relative;min-height:80px;justify-content:center}
+
+/* Syringe SVG styling */
+.syringe-wrapper{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;padding:4px 0}
+.syringe-wrapper .autowired-tag{font-family:'JetBrains Mono',monospace;font-size:0.78rem;font-weight:800;color:var(--spring);background:rgba(109,179,63,0.12);border:1px solid rgba(109,179,63,0.3);padding:3px 12px;border-radius:8px;white-space:nowrap;animation:autowiredPulse 2.5s ease-in-out infinite;letter-spacing:0.5px}
+.syringe-wrapper .inject-label{font-size:0.72rem;color:var(--text-dim);font-weight:600;font-style:italic}
+
+.syringe-svg{width:60px;height:60px;filter:drop-shadow(0 0 8px rgba(109,179,63,0.3))}
+.syringe-svg .syringe-body{fill:none;stroke:var(--spring);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.syringe-svg .syringe-liquid{fill:rgba(109,179,63,0.3);stroke:none}
+.syringe-svg .syringe-needle{stroke:var(--spring);stroke-width:2.5;stroke-linecap:round}
+
+/* Syringe animation */
+.syringe-anim{animation:syringeInject 3s ease-in-out infinite}
+@keyframes syringeInject{
+  0%,100%{transform:translateY(0)}
+  30%{transform:translateY(6px)}
+  50%{transform:translateY(6px)}
+  70%{transform:translateY(0)}
+}
+
+/* Liquid drip animation */
+.liquid-drops{position:absolute;width:4px;height:4px;background:var(--spring);border-radius:50%;opacity:0;animation:liquidDrip 3s ease-in-out infinite}
+.liquid-drops:nth-child(1){animation-delay:0.4s;left:calc(50% - 2px)}
+.liquid-drops:nth-child(2){animation-delay:0.6s;left:calc(50% + 4px)}
+.liquid-drops:nth-child(3){animation-delay:0.8s;left:calc(50% - 6px)}
+@keyframes liquidDrip{
+  0%,25%{opacity:0;transform:translateY(0)}
+  35%{opacity:0.8;transform:translateY(4px)}
+  60%{opacity:0.3;transform:translateY(18px)}
+  70%,100%{opacity:0;transform:translateY(24px)}
+}
+
+@keyframes autowiredPulse{
+  0%,100%{box-shadow:0 0 0 rgba(109,179,63,0);text-shadow:0 0 0 transparent}
+  50%{box-shadow:0 0 16px rgba(109,179,63,0.25);text-shadow:0 0 8px rgba(109,179,63,0.4)}
+}
+
+/* Responsive */
+@media(max-width:600px){
+  .inj-box{min-width:140px;padding:14px 16px;font-size:0.82rem}
+  .inj-box .inj-annotation{font-size:0.62rem}
+  .syringe-wrapper .autowired-tag{font-size:0.68rem;padding:2px 8px}
+}
+
 /* === HTTP METHOD BADGES === */
 .method-badge{display:inline-block;padding:2px 10px;border-radius:6px;font-weight:800;font-size:0.7rem;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px}
 .method-badge.post{background:rgba(73,204,144,0.15);color:#49cc90}
@@ -609,6 +664,114 @@ footer .heart{color:var(--accent2);animation:pulse 2s ease-in-out infinite;displ
     <div class="tip" style="margin-top:12px">
       <span class="tip-icon">💡</span>
       <div class="tip-content">O Spring Boot gera o SQL automaticamente! Você trabalha com <strong>objetos Java</strong> e o Hibernate traduz tudo para SQL. Isso se chama <strong>ORM (Object-Relational Mapping)</strong>.</div>
+    </div>
+  </div>
+
+  <!-- SYRINGE INJECTION DIAGRAM -->
+  <div class="card">
+    <h3 style="margin-bottom:6px;color:var(--spring)">💉 Injeção de Dependência — @Autowired</h3>
+    <p style="color:var(--text-dim);margin-bottom:8px;font-size:0.9rem">O Spring <strong>"injeta"</strong> automaticamente as dependências entre as camadas. É como uma seringa que conecta tudo pra você!</p>
+
+    <div class="concept" style="margin-bottom:20px">
+      <div class="concept-title">🤔 O que é @Autowired?</div>
+      <p>Quando o Controller precisa usar o Service, você não faz <code>new Service()</code> manualmente. O <strong style="color:var(--spring)">Spring injeta automaticamente</strong> a dependência — como uma seringa que entrega o componente certo no lugar certo. Isso é o padrão de <strong>Inversão de Controle (IoC)</strong>.</p>
+    </div>
+
+    <div class="injection-diagram">
+      <!-- Repository Box -->
+      <div class="inj-row">
+        <div class="inj-box box-repo">
+          🗄️ Repository
+          <span class="inj-annotation">@Repository</span>
+        </div>
+      </div>
+
+      <!-- Syringe: Repository → Service -->
+      <div class="inj-syringe-area">
+        <div class="syringe-wrapper syringe-anim">
+          <svg class="syringe-svg" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <!-- Syringe plunger handle -->
+            <line class="syringe-body" x1="30" y1="2" x2="30" y2="8"/>
+            <line class="syringe-body" x1="24" y1="2" x2="36" y2="2"/>
+            <!-- Plunger rod -->
+            <line class="syringe-body" x1="30" y1="8" x2="30" y2="18"/>
+            <!-- Barrel -->
+            <rect class="syringe-body" x="22" y="18" width="16" height="24" rx="2"/>
+            <!-- Liquid inside barrel -->
+            <rect class="syringe-liquid" x="23" y="28" width="14" height="13" rx="1"/>
+            <!-- Barrel markings -->
+            <line class="syringe-body" x1="22" y1="24" x2="25" y2="24" style="stroke-width:1;opacity:0.5"/>
+            <line class="syringe-body" x1="22" y1="30" x2="25" y2="30" style="stroke-width:1;opacity:0.5"/>
+            <line class="syringe-body" x1="22" y1="36" x2="25" y2="36" style="stroke-width:1;opacity:0.5"/>
+            <!-- Needle connector -->
+            <rect class="syringe-body" x="26" y="42" width="8" height="4" rx="1" style="fill:rgba(109,179,63,0.2)"/>
+            <!-- Needle -->
+            <line class="syringe-needle" x1="30" y1="46" x2="30" y2="58"/>
+          </svg>
+          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:3px">
+            <span class="autowired-tag">@Autowired</span>
+            <span class="inject-label">injeta Repository no Service</span>
+          </div>
+        </div>
+        <div class="liquid-drops"></div>
+        <div class="liquid-drops"></div>
+        <div class="liquid-drops"></div>
+      </div>
+
+      <!-- Service Box -->
+      <div class="inj-row">
+        <div class="inj-box box-service">
+          ⚙️ Service
+          <span class="inj-annotation">@Service</span>
+        </div>
+      </div>
+
+      <!-- Syringe: Service → Controller -->
+      <div class="inj-syringe-area">
+        <div class="syringe-wrapper syringe-anim" style="animation-delay:1.5s">
+          <svg class="syringe-svg" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <!-- Syringe plunger handle -->
+            <line class="syringe-body" x1="30" y1="2" x2="30" y2="8"/>
+            <line class="syringe-body" x1="24" y1="2" x2="36" y2="2"/>
+            <!-- Plunger rod -->
+            <line class="syringe-body" x1="30" y1="8" x2="30" y2="18"/>
+            <!-- Barrel -->
+            <rect class="syringe-body" x="22" y="18" width="16" height="24" rx="2"/>
+            <!-- Liquid inside barrel -->
+            <rect class="syringe-liquid" x="23" y="28" width="14" height="13" rx="1"/>
+            <!-- Barrel markings -->
+            <line class="syringe-body" x1="22" y1="24" x2="25" y2="24" style="stroke-width:1;opacity:0.5"/>
+            <line class="syringe-body" x1="22" y1="30" x2="25" y2="30" style="stroke-width:1;opacity:0.5"/>
+            <line class="syringe-body" x1="22" y1="36" x2="25" y2="36" style="stroke-width:1;opacity:0.5"/>
+            <!-- Needle connector -->
+            <rect class="syringe-body" x="26" y="42" width="8" height="4" rx="1" style="fill:rgba(109,179,63,0.2)"/>
+            <!-- Needle -->
+            <line class="syringe-needle" x1="30" y1="46" x2="30" y2="58"/>
+          </svg>
+          <div style="display:flex;flex-direction:column;align-items:flex-start;gap:3px">
+            <span class="autowired-tag">@Autowired</span>
+            <span class="inject-label">injeta Service no Controller</span>
+          </div>
+        </div>
+        <div class="liquid-drops" style="animation-delay:1.9s"></div>
+        <div class="liquid-drops" style="animation-delay:2.1s"></div>
+        <div class="liquid-drops" style="animation-delay:2.3s"></div>
+      </div>
+
+      <!-- Controller Box -->
+      <div class="inj-row">
+        <div class="inj-box box-controller">
+          🎮 Controller
+          <span class="inj-annotation">@RestController</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip" style="margin-top:20px;border-left-color:var(--spring)">
+      <span class="tip-icon">💉</span>
+      <div class="tip-content">
+        <strong>Na prática:</strong> Quando você declara <code style="color:var(--spring)">@Autowired private AlunoService alunoService;</code> dentro do Controller, o Spring automaticamente cria e injeta uma instância do Service. Você <strong>nunca</strong> precisa fazer <code>new AlunoService()</code> — o Spring cuida disso!
+      </div>
     </div>
   </div>
 

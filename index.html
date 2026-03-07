@@ -304,6 +304,15 @@ pre{padding:20px;margin:0;overflow-x:auto;font-family:'JetBrains Mono',monospace
 .layer-db{background:linear-gradient(135deg,rgba(69,183,209,0.15),rgba(69,183,209,0.05));border:1px solid rgba(69,183,209,0.2);color:var(--accent4)}
 .layer-arrow{text-align:center;color:var(--text-dim);font-size:0.8rem}
 
+/* Layer syringe connector */
+.layer-syringe-connector{display:flex;align-items:center;justify-content:center;gap:6px;padding:4px 0;position:relative}
+.layer-syringe-connector .layer-syringe-icon{width:22px;height:22px;filter:drop-shadow(0 0 4px rgba(109,179,63,0.4));flex-shrink:0}
+.layer-syringe-connector .layer-syringe-icon .syringe-body{fill:none;stroke:var(--spring);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.layer-syringe-connector .layer-syringe-icon .syringe-liquid{fill:rgba(109,179,63,0.35);stroke:none}
+.layer-syringe-connector .layer-syringe-icon .syringe-needle{stroke:var(--spring);stroke-width:2.5;stroke-linecap:round}
+.layer-syringe-connector .layer-autowired{font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:800;color:var(--spring);background:rgba(109,179,63,0.1);border:1px solid rgba(109,179,63,0.25);padding:2px 8px;border-radius:6px;animation:autowiredPulse 2.5s ease-in-out infinite}
+.layer-syringe-connector .layer-inject-text{font-size:0.65rem;color:var(--text-dim);font-weight:600}
+
 /* === SYRINGE INJECTION DIAGRAM === */
 .injection-diagram{max-width:600px;margin:30px auto 0;display:flex;flex-direction:column;align-items:center;gap:0}
 .inj-row{display:flex;align-items:center;justify-content:center;width:100%;gap:0;position:relative}
@@ -657,9 +666,31 @@ footer .heart{color:var(--accent2);animation:pulse 2s ease-in-out infinite;displ
       <div class="layer-item layer-client">🌐 Cliente (Insomnia / Swagger / Frontend)<div class="layer-sub">Envia requisições HTTP</div></div>
       <div class="layer-arrow">↕️ JSON</div>
       <div class="layer-item layer-controller">🎮 Controller<div class="layer-sub">Recebe requests, devolve responses — @RestController</div></div>
-      <div class="layer-arrow">↕️ Objetos Java</div>
+      <div class="layer-syringe-connector syringe-anim">
+        <svg class="layer-syringe-icon" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+          <line class="syringe-body" x1="30" y1="4" x2="30" y2="10"/><line class="syringe-body" x1="25" y1="4" x2="35" y2="4"/>
+          <line class="syringe-body" x1="30" y1="10" x2="30" y2="18"/>
+          <rect class="syringe-body" x="23" y="18" width="14" height="20" rx="2"/>
+          <rect class="syringe-liquid" x="24" y="27" width="12" height="10" rx="1"/>
+          <rect class="syringe-body" x="27" y="38" width="6" height="4" rx="1" style="fill:rgba(109,179,63,0.2)"/>
+          <line class="syringe-needle" x1="30" y1="42" x2="30" y2="56"/>
+        </svg>
+        <span class="layer-autowired">@Autowired</span>
+        <span class="layer-inject-text">↕️ injeta Service no Controller</span>
+      </div>
       <div class="layer-item layer-service">⚙️ Service<div class="layer-sub">Regras de negócio — @Service</div></div>
-      <div class="layer-arrow">↕️ Objetos Java</div>
+      <div class="layer-syringe-connector syringe-anim" style="animation-delay:1.5s">
+        <svg class="layer-syringe-icon" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+          <line class="syringe-body" x1="30" y1="4" x2="30" y2="10"/><line class="syringe-body" x1="25" y1="4" x2="35" y2="4"/>
+          <line class="syringe-body" x1="30" y1="10" x2="30" y2="18"/>
+          <rect class="syringe-body" x="23" y="18" width="14" height="20" rx="2"/>
+          <rect class="syringe-liquid" x="24" y="27" width="12" height="10" rx="1"/>
+          <rect class="syringe-body" x="27" y="38" width="6" height="4" rx="1" style="fill:rgba(109,179,63,0.2)"/>
+          <line class="syringe-needle" x1="30" y1="42" x2="30" y2="56"/>
+        </svg>
+        <span class="layer-autowired">@Autowired</span>
+        <span class="layer-inject-text">↕️ injeta Repository no Service</span>
+      </div>
       <div class="layer-item layer-repo">🗄️ Repository<div class="layer-sub">Acesso ao banco de dados — extends JpaRepository</div></div>
       <div class="layer-arrow">↕️ Entidades (Models)</div>
       <div class="layer-item layer-model">📐 Model<div class="layer-sub">Modela as entidades — @Entity / @Table / @Id</div></div>

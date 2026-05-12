@@ -152,6 +152,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);line
 .code-header .lang-badge.sql{background:rgba(69,183,209,0.15);color:var(--accent4)}
 .code-header .lang-badge.json{background:rgba(247,183,49,0.15);color:var(--accent5)}
 .code-header .lang-badge.http{background:rgba(255,107,107,0.15);color:var(--accent2)}
+pre,code{font-variant-ligatures:none;font-feature-settings:"liga" 0,"clig" 0,"calt" 0}
 pre{padding:20px;margin:0;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.85;color:#c9d1d9;tab-size:4}
 .code-block.with-lines pre{padding-left:56px}
 .code-block .line-numbers{position:absolute;left:0;top:44px;padding:20px 12px 20px 16px;color:rgba(255,255,255,0.12);font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.85;text-align:right;user-select:none;border-right:1px solid rgba(255,255,255,0.03)}
@@ -2183,6 +2184,43 @@ br.com.alunoonline.api/
     <div class="tip">
       <span class="tip-icon">📌</span>
       <div class="tip-content"><strong>Como funciona o <code>findById(...).orElseThrow(...)</code>?</strong> O <code>findById</code> retorna um <code>Optional</code> (a "caixa" que pode estar vazia). Se a matrícula existe, o <code>orElseThrow</code> abre a caixa e devolve ela. Se não existe, lança o erro <strong>404 Not Found</strong>.</div>
+    </div>
+
+    <!-- DISSECANDO A SINTAXE LAMBDA -->
+    <div class="analogy" style="margin-top:14px">
+      <div class="analogy-title">🔍 Dissecando essa linha esquisita: <code>.orElseThrow(() -&gt; new ResponseStatusException(...))</code></div>
+      <p style="color:var(--text-dim);margin-bottom:10px">À primeira vista parece um monte de parêntese e setinha — mas é só uma <strong>função em formato curtinho</strong>. Vamos por partes:</p>
+
+      <div class="code-block" style="margin:10px 0">
+        <pre>
+matriculaAlunoRepository.<span class="fn">findById</span>(id)
+    .<span class="fn">orElseThrow</span>( () -&gt; <span class="kw">new</span> <span class="tp">ResponseStatusException</span>(...) );
+   <span class="cm">         └──┬──┘ └┬┘ └─────────────┬─────────────┘</span>
+   <span class="cm">         lambda  seta    o que executar quando vazio</span></pre>
+      </div>
+
+      <div class="annotation-grid" style="margin-top:10px">
+        <div class="annotation-card">
+          <div class="anno-name" style="color:var(--accent5)">() </div>
+          <div class="anno-desc"><strong>Parênteses vazios</strong> = "essa função não recebe nenhum parâmetro". Se recebesse um, seria <code>(x) -&gt; ...</code></div>
+        </div>
+        <div class="annotation-card">
+          <div class="anno-name" style="color:var(--accent3)">-&gt;</div>
+          <div class="anno-desc"><strong>Seta de lambda</strong>: separa "os parâmetros" (esquerda) do "o que fazer" (direita). Lê-se: <em>"para o que tá à esquerda, faça o que tá à direita"</em>.</div>
+        </div>
+        <div class="annotation-card">
+          <div class="anno-name" style="color:var(--accent6)">new ...</div>
+          <div class="anno-desc"><strong>O que executar</strong> SE a caixa estiver vazia. Aqui criamos uma exceção 404.</div>
+        </div>
+      </div>
+
+      <p style="color:var(--text-dim);margin-top:12px;font-size:0.92rem">💡 <strong>Por que não passamos a exceção pronta?</strong> Tipo: <code>.orElseThrow(new ResponseStatusException(...))</code>. Porque assim a exceção seria <strong>criada toda vez</strong>, mesmo quando a matrícula existe (gasto à toa!). Com a lambda <code>() -&gt; new ...</code>, a exceção só é criada <strong>se realmente precisar</strong> ser lançada. É <em>preguiçoso</em> no bom sentido!</p>
+    </div>
+
+    <!-- ALERTA SOBRE LIGATURES -->
+    <div class="warning" style="margin-top:14px">
+      <span class="warning-icon">⚠️</span>
+      <div style="color:var(--text-dim);font-size:0.92rem"><strong style="color:var(--accent5)">Atenção, alunos!</strong> Algumas IDEs (IntelliJ, VS Code) usam <strong>font ligatures</strong> e desenham <code>-&gt;</code> como <strong>→</strong>, <code>!=</code> como <strong>≠</strong>, e <code>&gt;=</code> como <strong>≥</strong>. <strong>Isso é só visual!</strong> No código real você digita <code>-</code> seguido de <code>&gt;</code>, <code>!</code> seguido de <code>=</code>, e <code>&gt;</code> seguido de <code>=</code>. Se digitar <code>→</code> de verdade, o Java <strong>não compila</strong>!</div>
     </div>
 
     <p style="color:var(--text-dim);font-size:0.92rem;margin-top:14px"><strong>Não esqueça dos imports!</strong> Como passamos a usar <code>ResponseStatusException</code> e <code>HttpStatus</code>, adicione no topo do arquivo:</p>

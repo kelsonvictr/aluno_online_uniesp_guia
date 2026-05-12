@@ -547,16 +547,13 @@ footer .heart{color:var(--accent2);animation:pulse 2s ease-in-out infinite;displ
   </div>
   <div class="sidebar-group">
     <div class="sidebar-group-title">📝 Capítulo 4 — Matrícula</div>
-    <a class="sidebar-link" onclick="goTo('mat-model')"><span class="dot" style="background:var(--accent6)"></span>Model + Enum</a>
-    <a class="sidebar-link" onclick="goTo('mat-service')"><span class="dot" style="background:var(--accent5)"></span>Service (Regras)</a>
-    <a class="sidebar-link" onclick="goTo('mat-controller')"><span class="dot" style="background:var(--accent)"></span>Controller</a>
+    <a class="sidebar-link" onclick="goTo('mat-foundation')"><span class="dot" style="background:var(--accent6)"></span>Fundação (Enum + Model + Repo)</a>
+    <a class="sidebar-link" onclick="goTo('mat-criar')"><span class="dot" style="background:var(--accent3)"></span>1) Criar Matrícula</a>
+    <a class="sidebar-link" onclick="goTo('mat-trancar')"><span class="dot" style="background:var(--accent2)"></span>2) Trancar Matrícula</a>
+    <a class="sidebar-link" onclick="goTo('mat-notas')"><span class="dot" style="background:var(--accent5)"></span>3) Atualizar Notas + DTO</a>
+    <a class="sidebar-link" onclick="goTo('mat-historico')"><span class="dot" style="background:var(--accent4)"></span>4) Emitir Histórico + DTOs</a>
+    <a class="sidebar-link" onclick="goTo('mat-service-full')"><span class="dot" style="background:var(--accent)"></span>Service & Controller Completos</a>
     <a class="sidebar-link" onclick="goTo('mat-demo')"><span class="dot" style="background:var(--accent6)"></span>Demo Completa</a>
-  </div>
-  <div class="sidebar-group">
-    <div class="sidebar-group-title">📦 Capítulo 5 — DTOs</div>
-    <a class="sidebar-link" onclick="goTo('dto-intro')"><span class="dot" style="background:var(--accent3)"></span>O que é DTO?</a>
-    <a class="sidebar-link" onclick="goTo('dto-code')"><span class="dot" style="background:var(--accent4)"></span>DTOs do Projeto</a>
-    <a class="sidebar-link" onclick="goTo('dto-historico')"><span class="dot" style="background:var(--accent5)"></span>Histórico Acadêmico</a>
   </div>
 </nav>
 
@@ -1871,13 +1868,37 @@ br.com.alunoonline.api/
   <p class="chapter-subtitle">A entidade mais complexa — Enum, regras de negócio, PATCH</p>
 </div>
 
-<!-- MAT: MODEL -->
-<section class="step-section" id="mat-model">
+<!-- Roteiro do capítulo -->
+<section class="step-section" id="mat-roteiro">
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">🧭 Como vamos construir este capítulo</div>
+      <p>Aqui as coisas ficam mais ricas: <strong>4 operações</strong> diferentes, com regras de negócio reais. Para não embolar tudo, vamos construir <strong style="color:var(--text)">uma operação por vez</strong> — descendo o fluxo completo de cada uma antes de ir para a próxima.</p>
+    </div>
+    <ol style="margin:12px 0 0 22px;color:var(--text-dim);display:flex;flex-direction:column;gap:8px;font-size:0.95rem">
+      <li>🏗️ <strong style="color:var(--text)">Fundação</strong> — Enum, Model e Repository (a base que <em>todas</em> as operações vão usar)</li>
+      <li>📝 <strong style="color:var(--text)">Criar matrícula</strong> — Service + Controller</li>
+      <li>🔒 <strong style="color:var(--text)">Trancar matrícula</strong> — Service + Controller</li>
+      <li>📊 <strong style="color:var(--text)">Atualizar notas</strong> — aqui aparece o <strong style="color:var(--accent5)">primeiro DTO</strong>, depois Service + Controller</li>
+      <li>📋 <strong style="color:var(--text)">Emitir histórico</strong> — DTOs de resposta + Service + Controller</li>
+      <li>📦 <strong style="color:var(--text)">Service e Controller completos</strong> — visão final, tudo junto</li>
+    </ol>
+    <div class="tip" style="margin-top:14px">
+      <span class="tip-icon">📌</span>
+      <div class="tip-content">A cada operação vamos <strong>acrescentar</strong> métodos ao Service e ao Controller. Os arquivos completos aparecem só no final — não se preocupe em "ver tudo de uma vez".</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- MAT 4.1: FUNDAÇÃO (Enum + Model + Repository) -->
+<section class="step-section" id="mat-foundation">
   <div class="step-header">
     <div class="step-number sn-purple">4.1</div>
     <div>
-      <div class="step-title">Model + Enum</div>
-      <div style="color:var(--text-dim);font-size:0.88rem">Novidades: Dois @ManyToOne + @Enumerated</div>
+      <div class="step-title">Fundação — Enum + Model + Repository</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">A base que todas as 4 operações vão usar</div>
     </div>
   </div>
 
@@ -1887,7 +1908,9 @@ br.com.alunoonline.api/
       <p>A matrícula é uma entidade que liga um <strong style="color:var(--accent2)">Aluno</strong> a uma <strong style="color:var(--accent5)">Disciplina</strong>, com notas e um status (MATRICULADO, APROVADO, REPROVADO, TRANCADO). É como o <strong style="color:var(--text)">"casamento" entre aluno e disciplina</strong>.</p>
     </div>
 
-    <h4 style="margin:16px 0 10px;color:var(--accent6)">🏷️ Primeiro, o Enum de Status:</h4>
+    <!-- PASSO 1: ENUM -->
+    <h4 style="margin:18px 0 10px;color:var(--accent6)">🏷️ Passo 1 — O Enum de Status</h4>
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:10px">Antes do Model, criamos o Enum que define os 4 estados possíveis de uma matrícula:</p>
     <div class="code-block with-lines">
       <div class="code-header">
         <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
@@ -1899,8 +1922,8 @@ br.com.alunoonline.api/
 
 <span class="kw">public enum</span> <span class="tp">MatriculaAlunoStatusEnum</span> {
     <span class="nb">MATRICULADO</span>,   <span class="cm">// Estado inicial</span>
-    <span class="nb">APROVADO</span>,      <span class="cm">// Média ≥ 7.0</span>
-    <span class="nb">REPROVADO</span>,     <span class="cm">// Média < 7.0</span>
+    <span class="nb">APROVADO</span>,      <span class="cm">// Média &gt;= 7.0</span>
+    <span class="nb">REPROVADO</span>,     <span class="cm">// Média &lt; 7.0</span>
     <span class="nb">TRANCADO</span>;      <span class="cm">// Matrícula trancada</span>
 }</pre>
     </div>
@@ -1910,7 +1933,9 @@ br.com.alunoonline.api/
       <p style="color:var(--text-dim)">Enum é uma <strong style="color:var(--text)">lista fixa de opções</strong>. Em vez de usar Strings como "APROVADO" (que pode ser digitada errada como "aprovado" ou "APROVDO"), o Enum garante que só existem 4 valores possíveis. É como um <strong style="color:var(--text)">menu fechado</strong> — só pode escolher o que está lá!</p>
     </div>
 
-    <h4 style="margin:24px 0 10px;color:var(--accent6)">📝 O Model MatriculaAluno:</h4>
+    <!-- PASSO 2: MODEL -->
+    <h4 style="margin:28px 0 10px;color:var(--accent6)">📝 Passo 2 — O Model MatriculaAluno</h4>
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:10px">Agora o Model. Repare que ele tem <strong style="color:var(--text)">dois @ManyToOne</strong> (aluno e disciplina) e usa o Enum que acabamos de criar:</p>
     <div class="code-block with-lines">
       <div class="code-header">
         <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
@@ -1937,11 +1962,11 @@ br.com.alunoonline.api/
 
     <span class="an">@ManyToOne</span>
     <span class="an">@JoinColumn</span>(name = <span class="st">"aluno_id"</span>)
-    <span class="kw">private</span> <span class="tp">Aluno</span> aluno;          <span class="cm">// FK → aluno</span>
+    <span class="kw">private</span> <span class="tp">Aluno</span> aluno;          <span class="cm">// FK -&gt; aluno</span>
 
     <span class="an">@ManyToOne</span>
     <span class="an">@JoinColumn</span>(name = <span class="st">"disciplina_id"</span>)
-    <span class="kw">private</span> <span class="tp">Disciplina</span> disciplina;  <span class="cm">// FK → disciplina</span>
+    <span class="kw">private</span> <span class="tp">Disciplina</span> disciplina;  <span class="cm">// FK -&gt; disciplina</span>
 
     <span class="kw">private</span> <span class="tp">Double</span> nota1;
     <span class="kw">private</span> <span class="tp">Double</span> nota2;
@@ -1952,7 +1977,7 @@ br.com.alunoonline.api/
     </div>
 
     <!-- DB Visualization -->
-    <h4 style="margin:20px 0 12px;color:var(--accent4)">🗄️ No banco de dados:</h4>
+    <h4 style="margin:20px 0 12px;color:var(--accent4)">🗄️ Como fica no banco de dados:</h4>
     <div class="db-table">
       <div class="db-table-header">🐘 Tabela: matricula_aluno</div>
       <table>
@@ -1964,40 +1989,70 @@ br.com.alunoonline.api/
         </tbody>
       </table>
     </div>
+
+    <!-- PASSO 3: REPOSITORY -->
+    <h4 style="margin:28px 0 10px;color:var(--accent6)">🗄️ Passo 3 — O Repository</h4>
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:10px">Como em toda entidade, basta estender <code style="color:var(--accent6)">JpaRepository</code>. Já aproveitamos para adicionar um método <strong>derived query</strong> que vamos precisar lá no <em>emitir histórico</em>:</p>
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">repository/MatriculaAlunoRepository.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.repository;</span>
+
+<span class="pkg">import br.com.alunoonline.api.model.MatriculaAluno;</span>
+<span class="pkg">import org.springframework.data.jpa.repository.JpaRepository;</span>
+<span class="pkg">import org.springframework.stereotype.Repository;</span>
+<span class="pkg">import java.util.List;</span>
+
+<span class="an">@Repository</span>
+<span class="kw">public interface</span> <span class="tp">MatriculaAlunoRepository</span> <span class="kw">extends</span> <span class="tp">JpaRepository</span>&lt;<span class="tp">MatriculaAluno</span>, <span class="tp">Long</span>&gt; {
+
+    <span class="cm">// SELECT * FROM matricula_aluno WHERE aluno_id = ?</span>
+    <span class="tp">List</span>&lt;<span class="tp">MatriculaAluno</span>&gt; <span class="fn">findByAlunoId</span>(<span class="tp">Long</span> alunoId);
+}</pre>
+    </div>
+    <div class="tip">
+      <span class="tip-icon">🪄</span>
+      <div class="tip-content"><strong>findByAlunoId</strong> é uma <em>Derived Query</em> (mesmo conceito que vimos na Disciplina!). O Spring lê o nome do método e gera o SQL sozinho. Vamos usar esse método no <strong>emitir histórico</strong>, lá no passo 4.5.</div>
+    </div>
+
+    <div class="tip" style="margin-top:12px">
+      <span class="tip-icon">✅</span>
+      <div class="tip-content"><strong>Pronto, a fundação está construída.</strong> A partir daqui, é só <strong>uma operação por vez</strong> — Service + Controller, com DTOs aparecendo na hora certa.</div>
+    </div>
   </div>
 </section>
 
 <div class="section-connector"><div class="line"></div></div>
 
-<!-- MAT: SERVICE -->
-<section class="step-section" id="mat-service">
+<!-- MAT 4.2: CRIAR MATRÍCULA -->
+<section class="step-section" id="mat-criar">
   <div class="step-header">
-    <div class="step-number sn-yellow">4.2</div>
+    <div class="step-number sn-green">4.2</div>
     <div>
-      <div class="step-title">MatriculaAlunoService</div>
-      <div style="color:var(--text-dim);font-size:0.88rem">O Service mais complexo — regras de negócio reais!</div>
+      <div class="step-title">Operação 1 — Criar Matrícula</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">A operação mais simples: salvar e já marcar como MATRICULADO</div>
     </div>
   </div>
 
   <div class="card">
     <div class="concept">
-      <div class="concept-title">⚙️ Regras de Negócio da Matrícula</div>
-      <p>Este é o Service mais rico do projeto! Ele implementa:</p>
+      <div class="concept-title">📝 O que essa operação faz?</div>
+      <p>Recebe uma matrícula com <strong>aluno</strong> e <strong>disciplina</strong>, define o status inicial como <strong style="color:var(--accent5)">MATRICULADO</strong> automaticamente e salva no banco. O cliente <strong>não envia</strong> o status — quem decide isso é o Service!</p>
     </div>
 
-    <div class="annotation-grid" style="margin:12px 0 20px">
-      <div class="annotation-card"><div class="anno-name" style="color:var(--accent3)">📝 Criar</div><div class="anno-desc">Status começa como MATRICULADO automaticamente</div></div>
-      <div class="annotation-card"><div class="anno-name" style="color:var(--accent2)">🔒 Trancar</div><div class="anno-desc">Só se status atual for MATRICULADO</div></div>
-      <div class="annotation-card"><div class="anno-name" style="color:var(--accent5)">📊 Notas</div><div class="anno-desc">Atualiza notas e calcula média → APROVADO ou REPROVADO</div></div>
-      <div class="annotation-card"><div class="anno-name" style="color:var(--accent4)">📋 Histórico</div><div class="anno-desc">Lista todas as disciplinas com notas e status do aluno</div></div>
-    </div>
-
+    <!-- SERVICE -->
+    <h4 style="margin:18px 0 10px;color:var(--accent5)">⚙️ Service — criarMatricula</h4>
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:10px">Crie a classe <code>MatriculaAlunoService</code> com o esqueleto padrão (<code>@Service</code> + <code>@Autowired</code> do Repository) e adicione o <strong>primeiro método</strong>:</p>
     <div class="code-block with-lines">
       <div class="code-header">
         <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
         <div style="display:flex;align-items:center;gap:8px"><span class="filename">service/MatriculaAlunoService.java</span><span class="lang-badge java">Java</span></div>
       </div>
-      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30<br>31<br>32<br>33<br>34<br>35<br>36<br>37<br>38<br>39<br>40<br>41<br>42<br>43<br>44<br>45<br>46<br>47<br>48<br>49<br>50<br>51<br>52<br>53<br>54<br>55<br>56<br>57<br>58<br>59<br>60<br>61</div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21</div>
       <pre>
 <span class="pkg">package br.com.alunoonline.api.service;</span>
 
@@ -2005,14 +2060,10 @@ br.com.alunoonline.api/
 <span class="pkg">import br.com.alunoonline.api.model.MatriculaAluno;</span>
 <span class="pkg">import br.com.alunoonline.api.repository.MatriculaAlunoRepository;</span>
 <span class="pkg">import org.springframework.beans.factory.annotation.Autowired;</span>
-<span class="pkg">import org.springframework.http.HttpStatus;</span>
 <span class="pkg">import org.springframework.stereotype.Service;</span>
-<span class="pkg">import org.springframework.web.server.ResponseStatusException;</span>
 
 <span class="an">@Service</span>
 <span class="kw">public class</span> <span class="tp">MatriculaAlunoService</span> {
-
-    <span class="kw">private static final</span> <span class="tp">Double</span> <span class="nb">MEDIA_PARA_APROVACAO</span> = <span class="num">7.0</span>;
 
     <span class="an">@Autowired</span>
     <span class="tp">MatriculaAlunoRepository</span> matriculaAlunoRepository;
@@ -2023,16 +2074,99 @@ br.com.alunoonline.api/
             <span class="tp">MatriculaAlunoStatusEnum</span>.<span class="nb">MATRICULADO</span>);  <span class="cm">// Status automático!</span>
         matriculaAlunoRepository.<span class="fn">save</span>(matriculaAluno);
     }
+}</pre>
+    </div>
 
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div class="tip-content"><strong>Por que forçar o status no Service?</strong> Se deixássemos o cliente enviar, ele poderia criar uma matrícula já como APROVADO! O Service garante que toda matrícula nasce como <strong style="color:var(--accent5)">MATRICULADO</strong>.</div>
+    </div>
+
+    <!-- CONTROLLER -->
+    <h4 style="margin:24px 0 10px;color:var(--accent)">🎮 Controller — POST /matriculas</h4>
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:10px">Crie a classe <code>MatriculaAlunoController</code> e adicione o endpoint POST:</p>
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">controller/MatriculaAlunoController.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.controller;</span>
+
+<span class="pkg">import br.com.alunoonline.api.model.MatriculaAluno;</span>
+<span class="pkg">import br.com.alunoonline.api.service.MatriculaAlunoService;</span>
+<span class="pkg">import org.springframework.beans.factory.annotation.Autowired;</span>
+<span class="pkg">import org.springframework.http.HttpStatus;</span>
+<span class="pkg">import org.springframework.web.bind.annotation.*;</span>
+
+<span class="an">@RestController</span>
+<span class="an">@RequestMapping</span>(<span class="st">"/matriculas"</span>)
+<span class="kw">public class</span> <span class="tp">MatriculaAlunoController</span> {
+
+    <span class="an">@Autowired</span>
+    <span class="tp">MatriculaAlunoService</span> matriculaAlunoService;
+
+    <span class="an">@PostMapping</span>
+    <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">CREATED</span>)
+    <span class="kw">public void</span> <span class="fn">criarMatricula</span>(<span class="an">@RequestBody</span> <span class="tp">MatriculaAluno</span> m) {
+        matriculaAlunoService.<span class="fn">criarMatricula</span>(m);
+    }
+}</pre>
+    </div>
+
+    <table class="endpoint-table">
+      <thead><tr><th>Método</th><th>URL</th><th>Body</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method-badge post">POST</span></td><td><code>/matriculas</code></td><td><code>{ "aluno": {"id":1}, "disciplina": {"id":1} }</code></td><td>201</td></tr>
+      </tbody>
+    </table>
+
+    <div class="tip" style="margin-top:12px">
+      <span class="tip-icon">🧪</span>
+      <div class="tip-content"><strong>Teste agora!</strong> Suba o projeto e mande o POST acima — você deve receber <code>201 Created</code> e ver uma linha nova na tabela <code>matricula_aluno</code> com status <strong>MATRICULADO</strong>. Funcionou? Bora pra próxima.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- MAT 4.3: TRANCAR MATRÍCULA -->
+<section class="step-section" id="mat-trancar">
+  <div class="step-header">
+    <div class="step-number sn-yellow">4.3</div>
+    <div>
+      <div class="step-title">Operação 2 — Trancar Matrícula</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Primeira regra de negócio: só pode trancar quem está MATRICULADO</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">🔒 A regra desta operação</div>
+      <p>Só faz sentido trancar quem ainda está estudando! Quem já foi <strong style="color:var(--accent3)">APROVADO</strong>, <strong style="color:var(--accent2)">REPROVADO</strong> ou já está <strong>TRANCADO</strong> não pode ser trancado de novo. Por isso o Service precisa <strong style="color:var(--text)">verificar o status atual</strong> antes de alterar.</p>
+    </div>
+
+    <!-- SERVICE -->
+    <h4 style="margin:18px 0 10px;color:var(--accent5)">⚙️ Service — adicione trancarMatricula</h4>
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:10px">Adicione o método <strong>logo abaixo</strong> de <code>criarMatricula</code>, dentro da mesma classe <code>MatriculaAlunoService</code>:</p>
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">service/MatriculaAlunoService.java (acrescentar)</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <pre>
     <span class="cm">// ═══════════════ TRANCAR MATRÍCULA ═══════════════</span>
     <span class="kw">public void</span> <span class="fn">trancarMatricula</span>(<span class="tp">Long</span> id) {
+
+        <span class="cm">// 1) Buscar a matrícula — se não existir, 404</span>
         <span class="tp">MatriculaAluno</span> matricula =
             matriculaAlunoRepository.<span class="fn">findById</span>(id)
-                .<span class="fn">orElseThrow</span>(() -> <span class="kw">new</span> <span class="tp">ResponseStatusException</span>(
+                .<span class="fn">orElseThrow</span>(() -&gt; <span class="kw">new</span> <span class="tp">ResponseStatusException</span>(
                     <span class="tp">HttpStatus</span>.<span class="nb">NOT_FOUND</span>,
                     <span class="st">"Matricula não encontrada"</span>));
 
-        <span class="cm">// Só pode trancar se estiver MATRICULADO!</span>
+        <span class="cm">// 2) Só pode trancar se estiver MATRICULADO</span>
         <span class="kw">if</span> (matricula.<span class="fn">getStatus</span>()
                 .<span class="fn">equals</span>(<span class="tp">MatriculaAlunoStatusEnum</span>.<span class="nb">MATRICULADO</span>)) {
             matricula.<span class="fn">setStatus</span>(
@@ -2043,71 +2177,538 @@ br.com.alunoonline.api/
                 <span class="tp">HttpStatus</span>.<span class="nb">BAD_REQUEST</span>,
                 <span class="st">"Só é possível trancar com status MATRICULADO"</span>);
         }
-    }
+    }</pre>
+    </div>
 
+    <div class="tip">
+      <span class="tip-icon">📌</span>
+      <div class="tip-content"><strong>Como funciona o <code>findById(...).orElseThrow(...)</code>?</strong> O <code>findById</code> retorna um <code>Optional</code> (a "caixa" que pode estar vazia). Se a matrícula existe, o <code>orElseThrow</code> abre a caixa e devolve ela. Se não existe, lança o erro <strong>404 Not Found</strong>.</div>
+    </div>
+
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-top:14px"><strong>Não esqueça dos imports!</strong> Como passamos a usar <code>ResponseStatusException</code> e <code>HttpStatus</code>, adicione no topo do arquivo:</p>
+    <div class="code-block">
+      <pre>
+<span class="pkg">import org.springframework.http.HttpStatus;</span>
+<span class="pkg">import org.springframework.web.server.ResponseStatusException;</span></pre>
+    </div>
+
+    <!-- CONTROLLER -->
+    <h4 style="margin:24px 0 10px;color:var(--accent)">🎮 Controller — adicione PATCH /matriculas/trancar/{id}</h4>
+
+    <div class="concept">
+      <div class="concept-title">🔧 PUT vs PATCH — qual a diferença?</div>
+      <p><strong style="color:var(--accent5)">PUT</strong> = atualiza o recurso <strong>inteiro</strong> (todos os campos).<br>
+      <strong style="color:var(--accent3)">PATCH</strong> = atualiza <strong>parcialmente</strong> (só um pedaço).<br>
+      Estamos só mudando o <strong>status</strong>, não a matrícula inteira → usamos <strong>PATCH</strong>.</p>
+    </div>
+
+    <p style="color:var(--text-dim);font-size:0.92rem;margin:14px 0 10px">Adicione o endpoint <strong>logo abaixo</strong> do POST que já existe:</p>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">controller/MatriculaAlunoController.java (acrescentar)</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <pre>
+    <span class="an">@PatchMapping</span>(<span class="st">"/trancar/{id}"</span>)
+    <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">NO_CONTENT</span>)
+    <span class="kw">public void</span> <span class="fn">trancarMatricula</span>(<span class="an">@PathVariable</span> <span class="tp">Long</span> id) {
+        matriculaAlunoService.<span class="fn">trancarMatricula</span>(id);
+    }</pre>
+    </div>
+
+    <table class="endpoint-table">
+      <thead><tr><th>Método</th><th>URL</th><th>Ação</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method-badge patch">PATCH</span></td><td><code>/matriculas/trancar/1</code></td><td>Trancar matrícula de id 1</td><td>204</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- MAT 4.4: ATUALIZAR NOTAS -->
+<section class="step-section" id="mat-notas">
+  <div class="step-header">
+    <div class="step-number sn-blue">4.4</div>
+    <div>
+      <div class="step-title">Operação 3 — Atualizar Notas</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Aqui aparece o nosso primeiro DTO! E o cálculo automático de média.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">📊 O que essa operação faz?</div>
+      <p>O professor envia <strong>nota1</strong>, <strong>nota2</strong>, ou as duas. Se ambas estiverem preenchidas, calculamos a média e o status muda automaticamente para <strong style="color:var(--accent3)">APROVADO</strong> (média &gt;= 7.0) ou <strong style="color:var(--accent2)">REPROVADO</strong> (média &lt; 7.0).</p>
+    </div>
+
+    <!-- DTO INTRO -->
+    <h4 style="margin:18px 0 10px;color:var(--accent4)">📦 Espera... o que o cliente vai enviar?</h4>
+    <p style="color:var(--text-dim);font-size:0.95rem;margin-bottom:10px">Se usássemos o Model <code>MatriculaAluno</code> direto, o cliente teria que enviar id, aluno, disciplina, status... mas o professor só quer mandar <strong>as notas</strong>. É aqui que entra o nosso <strong style="color:var(--accent5)">primeiro DTO</strong>!</p>
+
+    <div class="analogy">
+      <div class="analogy-title">📦 O que é um DTO?</div>
+      <p style="color:var(--text-dim)"><strong>DTO = Data Transfer Object</strong>. É uma classe <strong style="color:var(--text)">simples</strong>, separada do Model, que serve só para <strong>transportar os dados que o cliente realmente precisa enviar (ou receber)</strong>. Pense num formulário enxuto: em vez de pedir 20 campos, pedimos só os 2 que importam.</p>
+    </div>
+
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-top:14px">Crie a pasta <code>dtos/</code> dentro de <code>br.com.alunoonline.api</code> e o arquivo abaixo:</p>
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">dtos/AtualizarNotasRequestDTO.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.dtos;</span>
+
+<span class="pkg">import lombok.Data;</span>
+
+<span class="an">@Data</span>
+<span class="kw">public class</span> <span class="tp">AtualizarNotasRequestDTO</span> {
+    <span class="kw">private</span> <span class="tp">Double</span> nota1;
+    <span class="kw">private</span> <span class="tp">Double</span> nota2;
+}</pre>
+    </div>
+
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div class="tip-content">O sufixo <strong>RequestDTO</strong> deixa claro que essa classe é para <em>entrada</em> (o que o cliente envia). Mais à frente teremos <strong>ResponseDTO</strong> para a saída.</div>
+    </div>
+
+    <!-- SERVICE -->
+    <h4 style="margin:24px 0 10px;color:var(--accent5)">⚙️ Service — adicione atualizarNotas</h4>
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:10px">Vamos também declarar uma <strong>constante</strong> com a média de aprovação, logo no topo da classe (perto do <code>@Autowired</code>):</p>
+    <div class="code-block">
+      <pre>
+    <span class="kw">private static final</span> <span class="tp">Double</span> <span class="nb">MEDIA_PARA_APROVACAO</span> = <span class="num">7.0</span>;</pre>
+    </div>
+
+    <p style="color:var(--text-dim);font-size:0.92rem;margin:14px 0 10px">Agora o método. Recebe o <code>id</code> da matrícula e o DTO. Só atualiza o que veio preenchido, e quando as duas notas estiverem prontas, calcula a média e define o status:</p>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">service/MatriculaAlunoService.java (acrescentar)</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <pre>
     <span class="cm">// ═══════════════ ATUALIZAR NOTAS ═══════════════</span>
     <span class="kw">public void</span> <span class="fn">atualizarNotas</span>(<span class="tp">Long</span> id,
                                <span class="tp">AtualizarNotasRequestDTO</span> dto) {
-        <span class="tp">MatriculaAluno</span> matricula = <span class="fn">buscarOuLancarExcecao</span>(id);
 
+        <span class="cm">// 1) Buscar matrícula (mesmo padrão do trancar)</span>
+        <span class="tp">MatriculaAluno</span> matricula =
+            matriculaAlunoRepository.<span class="fn">findById</span>(id)
+                .<span class="fn">orElseThrow</span>(() -&gt; <span class="kw">new</span> <span class="tp">ResponseStatusException</span>(
+                    <span class="tp">HttpStatus</span>.<span class="nb">NOT_FOUND</span>,
+                    <span class="st">"Matricula não encontrada"</span>));
+
+        <span class="cm">// 2) Só atualiza o que veio preenchido (PATCH parcial!)</span>
         <span class="kw">if</span> (dto.<span class="fn">getNota1</span>() != <span class="kw">null</span>)
             matricula.<span class="fn">setNota1</span>(dto.<span class="fn">getNota1</span>());
         <span class="kw">if</span> (dto.<span class="fn">getNota2</span>() != <span class="kw">null</span>)
             matricula.<span class="fn">setNota2</span>(dto.<span class="fn">getNota2</span>());
 
-        <span class="cm">// Se ambas as notas existem, calcula a média!</span>
+        <span class="cm">// 3) Se as 2 notas existem, calcula média e define status</span>
         <span class="kw">if</span> (matricula.<span class="fn">getNota1</span>() != <span class="kw">null</span>
-            && matricula.<span class="fn">getNota2</span>() != <span class="kw">null</span>) {
+            &amp;&amp; matricula.<span class="fn">getNota2</span>() != <span class="kw">null</span>) {
             <span class="tp">Double</span> media = (matricula.<span class="fn">getNota1</span>()
                           + matricula.<span class="fn">getNota2</span>()) / <span class="num">2</span>;
             matricula.<span class="fn">setStatus</span>(
-                media >= <span class="nb">MEDIA_PARA_APROVACAO</span>
+                media &gt;= <span class="nb">MEDIA_PARA_APROVACAO</span>
                     ? <span class="tp">MatriculaAlunoStatusEnum</span>.<span class="nb">APROVADO</span>
                     : <span class="tp">MatriculaAlunoStatusEnum</span>.<span class="nb">REPROVADO</span>);
         }
 
+        <span class="cm">// 4) Salvar a matrícula atualizada</span>
         matriculaAlunoRepository.<span class="fn">save</span>(matricula);
-    }
-}</pre>
+    }</pre>
     </div>
 
     <div class="tip">
       <span class="tip-icon">🧮</span>
-      <div class="tip-content"><strong>Regra de aprovação:</strong> Se nota1 e nota2 existem → calcula média = (nota1 + nota2) / 2. Se média ≥ 7.0 → <strong style="color:var(--accent3)">APROVADO</strong>. Se média < 7.0 → <strong style="color:var(--accent2)">REPROVADO</strong>.</div>
+      <div class="tip-content"><strong>Regra de aprovação:</strong> média = (nota1 + nota2) / 2. Se média &gt;= 7.0 → <strong style="color:var(--accent3)">APROVADO</strong>. Se média &lt; 7.0 → <strong style="color:var(--accent2)">REPROVADO</strong>. Enquanto só uma nota está preenchida, o status continua <strong>MATRICULADO</strong>.</div>
+    </div>
+
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-top:14px"><strong>Import novo:</strong> não esqueça de importar o DTO no topo:</p>
+    <div class="code-block">
+      <pre>
+<span class="pkg">import br.com.alunoonline.api.dtos.AtualizarNotasRequestDTO;</span></pre>
+    </div>
+
+    <!-- CONTROLLER -->
+    <h4 style="margin:24px 0 10px;color:var(--accent)">🎮 Controller — adicione PATCH /matriculas/atualizar-notas/{id}</h4>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">controller/MatriculaAlunoController.java (acrescentar)</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <pre>
+    <span class="an">@PatchMapping</span>(<span class="st">"/atualizar-notas/{id}"</span>)
+    <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">NO_CONTENT</span>)
+    <span class="kw">public void</span> <span class="fn">atualizarNotas</span>(<span class="an">@PathVariable</span> <span class="tp">Long</span> id,
+            <span class="an">@RequestBody</span> <span class="tp">AtualizarNotasRequestDTO</span> dto) {
+        matriculaAlunoService.<span class="fn">atualizarNotas</span>(id, dto);
+    }</pre>
+    </div>
+
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-top:10px">E o import do DTO também no Controller:</p>
+    <div class="code-block">
+      <pre>
+<span class="pkg">import br.com.alunoonline.api.dtos.AtualizarNotasRequestDTO;</span></pre>
+    </div>
+
+    <table class="endpoint-table" style="margin-top:16px">
+      <thead><tr><th>Método</th><th>URL</th><th>Body</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td><span class="method-badge patch">PATCH</span></td><td><code>/matriculas/atualizar-notas/1</code></td><td><code>{ "nota1": 8.0, "nota2": 7.5 }</code></td><td>204</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="section-connector"><div class="line"></div></div>
+
+<!-- MAT 4.5: EMITIR HISTÓRICO -->
+<section class="step-section" id="mat-historico">
+  <div class="step-header">
+    <div class="step-number sn-purple">4.5</div>
+    <div>
+      <div class="step-title">Operação 4 — Emitir Histórico</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Agora montamos uma RESPOSTA personalizada — entram os DTOs de resposta</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="concept">
+      <div class="concept-title">📋 O que essa operação faz?</div>
+      <p>Recebe o <code>alunoId</code> e devolve um <strong>histórico bonito</strong>: nome, email e cpf do aluno + a lista de cada disciplina cursada, com nome do professor, notas, média calculada e status. <strong style="color:var(--text)">Tudo pronto pro front-end exibir</strong>.</p>
+    </div>
+
+    <!-- RESPONSE DTOs INLINE -->
+    <h4 style="margin:18px 0 10px;color:var(--accent4)">📤 Quem responde isso? Mais DTOs — agora de resposta</h4>
+    <p style="color:var(--text-dim);font-size:0.95rem;margin-bottom:10px">Antes era o <em>cliente</em> que enviava (RequestDTO). Agora <strong>nós</strong> que devolvemos os dados. Para isso usamos DTOs de <strong>resposta</strong> (<code>ResponseDTO</code>), modelados exatamente no formato que queremos retornar. Precisamos de <strong>duas classes</strong>:</p>
+
+    <p style="color:var(--text-dim);font-size:0.92rem;margin:14px 0 8px"><strong style="color:var(--accent4)">1)</strong> Um DTO para representar cada disciplina do histórico:</p>
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">dtos/DisciplinasAlunoResponseDTO.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.dtos;</span>
+
+<span class="pkg">import br.com.alunoonline.api.enums.MatriculaAlunoStatusEnum;</span>
+<span class="pkg">import lombok.Data;</span>
+
+<span class="an">@Data</span>
+<span class="kw">public class</span> <span class="tp">DisciplinasAlunoResponseDTO</span> {
+    <span class="kw">private</span> <span class="tp">String</span> nomeDisciplina;
+    <span class="kw">private</span> <span class="tp">String</span> nomeProfessor;
+    <span class="kw">private</span> <span class="tp">Double</span> nota1;
+    <span class="kw">private</span> <span class="tp">Double</span> nota2;
+    <span class="kw">private</span> <span class="tp">Double</span> media;
+    <span class="kw">private</span> <span class="tp">MatriculaAlunoStatusEnum</span> status;
+}</pre>
+    </div>
+
+    <p style="color:var(--text-dim);font-size:0.92rem;margin:18px 0 8px"><strong style="color:var(--accent4)">2)</strong> Um DTO "envelope" com os dados do aluno + a lista de disciplinas:</p>
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">dtos/HistoricoAlunoResponseDTO.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12</div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.dtos;</span>
+
+<span class="pkg">import lombok.Data;</span>
+<span class="pkg">import java.util.List;</span>
+
+<span class="an">@Data</span>
+<span class="kw">public class</span> <span class="tp">HistoricoAlunoResponseDTO</span> {
+    <span class="kw">private</span> <span class="tp">String</span> nomeAluno;
+    <span class="kw">private</span> <span class="tp">String</span> emailAluno;
+    <span class="kw">private</span> <span class="tp">String</span> cpfAluno;
+    <span class="kw">private</span> <span class="tp">List</span>&lt;<span class="tp">DisciplinasAlunoResponseDTO</span>&gt; disciplinas;
+}</pre>
+    </div>
+
+    <div class="tip">
+      <span class="tip-icon">📌</span>
+      <div class="tip-content">Note que o <code>HistoricoAlunoResponseDTO</code> tem <strong>uma lista</strong> de <code>DisciplinasAlunoResponseDTO</code>. Cada matrícula daquele aluno vira <strong>uma disciplina</strong> na lista.</div>
+    </div>
+
+    <!-- SERVICE -->
+    <h4 style="margin:24px 0 10px;color:var(--accent5)">⚙️ Service — adicione emitirHistorico (4 passinhos simples)</h4>
+    <p style="color:var(--text-dim);font-size:0.95rem;margin-bottom:10px">A ideia é direta: <strong>buscar todas as matrículas do aluno</strong> e <strong>montar o DTO de resposta</strong>. Vamos com um <code>for</code> bem explícito, sem stream nem mapper — fácil de ler e debugar:</p>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">service/MatriculaAlunoService.java (acrescentar)</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <pre>
+    <span class="cm">// ═══════════════ EMITIR HISTÓRICO ═══════════════</span>
+    <span class="kw">public</span> <span class="tp">HistoricoAlunoResponseDTO</span> <span class="fn">emitirHistorico</span>(<span class="tp">Long</span> alunoId) {
+
+        <span class="cm">// 1) Buscar todas as matrículas desse aluno</span>
+        <span class="tp">List</span>&lt;<span class="tp">MatriculaAluno</span>&gt; matriculas =
+            matriculaAlunoRepository.<span class="fn">findByAlunoId</span>(alunoId);
+
+        <span class="kw">if</span> (matriculas.<span class="fn">isEmpty</span>()) {
+            <span class="kw">throw new</span> <span class="tp">ResponseStatusException</span>(
+                <span class="tp">HttpStatus</span>.<span class="nb">NOT_FOUND</span>,
+                <span class="st">"Nenhuma matrícula encontrada para esse aluno"</span>);
+        }
+
+        <span class="cm">// 2) Pegar os dados do aluno (qualquer matrícula serve)</span>
+        <span class="tp">Aluno</span> aluno = matriculas.<span class="fn">get</span>(<span class="num">0</span>).<span class="fn">getAluno</span>();
+
+        <span class="cm">// 3) Para cada matrícula, montar um DTO de disciplina</span>
+        <span class="tp">List</span>&lt;<span class="tp">DisciplinasAlunoResponseDTO</span>&gt; disciplinas =
+            <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;();
+
+        <span class="kw">for</span> (<span class="tp">MatriculaAluno</span> matricula : matriculas) {
+            <span class="tp">DisciplinasAlunoResponseDTO</span> disc =
+                <span class="kw">new</span> <span class="tp">DisciplinasAlunoResponseDTO</span>();
+
+            disc.<span class="fn">setNomeDisciplina</span>(matricula.<span class="fn">getDisciplina</span>().<span class="fn">getNome</span>());
+            disc.<span class="fn">setNomeProfessor</span>(
+                matricula.<span class="fn">getDisciplina</span>().<span class="fn">getProfessor</span>().<span class="fn">getNome</span>());
+            disc.<span class="fn">setNota1</span>(matricula.<span class="fn">getNota1</span>());
+            disc.<span class="fn">setNota2</span>(matricula.<span class="fn">getNota2</span>());
+
+            <span class="cm">// Só calcula a média se as duas notas existem</span>
+            <span class="kw">if</span> (matricula.<span class="fn">getNota1</span>() != <span class="kw">null</span>
+                &amp;&amp; matricula.<span class="fn">getNota2</span>() != <span class="kw">null</span>) {
+                <span class="tp">Double</span> media = (matricula.<span class="fn">getNota1</span>()
+                              + matricula.<span class="fn">getNota2</span>()) / <span class="num">2</span>;
+                disc.<span class="fn">setMedia</span>(media);
+            }
+
+            disc.<span class="fn">setStatus</span>(matricula.<span class="fn">getStatus</span>());
+            disciplinas.<span class="fn">add</span>(disc);
+        }
+
+        <span class="cm">// 4) Montar a resposta final e retornar</span>
+        <span class="tp">HistoricoAlunoResponseDTO</span> historico = <span class="kw">new</span> <span class="tp">HistoricoAlunoResponseDTO</span>();
+        historico.<span class="fn">setNomeAluno</span>(aluno.<span class="fn">getNome</span>());
+        historico.<span class="fn">setEmailAluno</span>(aluno.<span class="fn">getEmail</span>());
+        historico.<span class="fn">setCpfAluno</span>(aluno.<span class="fn">getCpf</span>());
+        historico.<span class="fn">setDisciplinas</span>(disciplinas);
+
+        <span class="kw">return</span> historico;
+    }</pre>
+    </div>
+
+    <div class="tip">
+      <span class="tip-icon">🧭</span>
+      <div class="tip-content"><strong>4 passinhos bem claros</strong>: (1) buscar as matrículas, (2) pegar os dados do aluno, (3) montar a lista de disciplinas num <code>for</code>, (4) montar a resposta final. Mesmo padrão que você já viu nas outras operações — só que agora retornando um DTO!</div>
+    </div>
+
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-top:14px"><strong>Imports novos</strong> no Service (no topo do arquivo):</p>
+    <div class="code-block">
+      <pre>
+<span class="pkg">import br.com.alunoonline.api.dtos.DisciplinasAlunoResponseDTO;</span>
+<span class="pkg">import br.com.alunoonline.api.dtos.HistoricoAlunoResponseDTO;</span>
+<span class="pkg">import br.com.alunoonline.api.model.Aluno;</span>
+<span class="pkg">import java.util.ArrayList;</span>
+<span class="pkg">import java.util.List;</span></pre>
+    </div>
+
+    <!-- CONTROLLER -->
+    <h4 style="margin:24px 0 10px;color:var(--accent)">🎮 Controller — adicione GET /matriculas/emitir-historico/{alunoId}</h4>
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:10px">Diferente dos outros métodos, esse <strong>retorna o DTO</strong> em vez de ser <code>void</code>:</p>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">controller/MatriculaAlunoController.java (acrescentar)</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <pre>
+    <span class="an">@GetMapping</span>(<span class="st">"/emitir-historico/{alunoId}"</span>)
+    <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">OK</span>)
+    <span class="kw">public</span> <span class="tp">HistoricoAlunoResponseDTO</span> <span class="fn">emitirHistorico</span>(
+            <span class="an">@PathVariable</span> <span class="tp">Long</span> alunoId) {
+        <span class="kw">return</span> matriculaAlunoService.<span class="fn">emitirHistorico</span>(alunoId);
+    }</pre>
+    </div>
+
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-top:10px">E o import do DTO de resposta no Controller:</p>
+    <div class="code-block">
+      <pre>
+<span class="pkg">import br.com.alunoonline.api.dtos.HistoricoAlunoResponseDTO;</span></pre>
+    </div>
+
+    <!-- JSON Response -->
+    <h4 style="margin:24px 0 10px;color:var(--accent4)">📤 Exemplo de resposta JSON</h4>
+    <p style="color:var(--text-dim);font-size:0.92rem;margin-bottom:10px">Chamando <code>GET /matriculas/emitir-historico/1</code>, a API devolve:</p>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">Resposta JSON — 200 OK</span><span class="lang-badge json">JSON</span></div>
+      </div>
+      <pre>
+{
+  <span class="fn">"nomeAluno"</span>: <span class="st">"Maria Silva"</span>,
+  <span class="fn">"emailAluno"</span>: <span class="st">"maria@email.com"</span>,
+  <span class="fn">"cpfAluno"</span>: <span class="st">"111.222.333-44"</span>,
+  <span class="fn">"disciplinas"</span>: [
+    {
+      <span class="fn">"nomeDisciplina"</span>: <span class="st">"Backend com Spring Boot"</span>,
+      <span class="fn">"nomeProfessor"</span>: <span class="st">"Prof. Carlos"</span>,
+      <span class="fn">"nota1"</span>: <span class="num">8.0</span>,
+      <span class="fn">"nota2"</span>: <span class="num">7.5</span>,
+      <span class="fn">"media"</span>: <span class="num">7.75</span>,
+      <span class="fn">"status"</span>: <span class="st">"APROVADO"</span> <span class="cm">✅</span>
+    },
+    {
+      <span class="fn">"nomeDisciplina"</span>: <span class="st">"Frontend com React"</span>,
+      <span class="fn">"nomeProfessor"</span>: <span class="st">"Profa. Ana"</span>,
+      <span class="fn">"nota1"</span>: <span class="num">5.0</span>,
+      <span class="fn">"nota2"</span>: <span class="num">4.0</span>,
+      <span class="fn">"media"</span>: <span class="num">4.5</span>,
+      <span class="fn">"status"</span>: <span class="st">"REPROVADO"</span> <span class="cm">❌</span>
+    }
+  ]
+}</pre>
+    </div>
+
+    <div class="analogy">
+      <div class="analogy-title">DTO montou tudo bonito!</div>
+      <p style="color:var(--text-dim)">Sem DTOs, a API devolveria objetos aninhados cheios de dados internos (ids, FKs, campos do banco). O DTO <strong style="color:var(--text)">formata exatamente o que o front-end precisa</strong> — nomes em vez de IDs, média já calculada, sem informações internas.</p>
     </div>
   </div>
 </section>
 
 <div class="section-connector"><div class="line"></div></div>
 
-<!-- MAT: CONTROLLER -->
-<section class="step-section" id="mat-controller">
+<!-- MAT 4.6: SERVICE + CONTROLLER COMPLETOS -->
+<section class="step-section" id="mat-service-full">
   <div class="step-header">
-    <div class="step-number sn-main">4.3</div>
+    <div class="step-number sn-main">4.6</div>
     <div>
-      <div class="step-title">MatriculaAlunoController</div>
-      <div style="color:var(--text-dim);font-size:0.88rem">Novidade: @PatchMapping — atualização parcial!</div>
+      <div class="step-title">Service e Controller — visão final</div>
+      <div style="color:var(--text-dim);font-size:0.88rem">Tudo o que você foi acrescentando, junto nos dois arquivos</div>
     </div>
   </div>
 
   <div class="card">
-    <div class="concept">
-      <div class="concept-title">🔧 PUT vs PATCH — qual a diferença?</div>
-      <p><strong style="color:var(--accent5)">PUT</strong> = atualiza o recurso <strong>inteiro</strong> (todos os campos).<br>
-      <strong style="color:var(--accent3)">PATCH</strong> = atualiza <strong>parcialmente</strong> (só os campos enviados).<br>
-      Para notas, usamos PATCH porque podemos enviar só a nota1, ou só a nota2, ou ambas!</p>
+    <p style="color:var(--text-dim);margin-bottom:14px">Hora de conferir! Se você seguiu cada passo, seu <code>MatriculaAlunoService</code> deve estar assim:</p>
+
+    <h4 style="color:var(--accent5);margin-bottom:10px">⚙️ MatriculaAlunoService.java (completo)</h4>
+    <div class="code-block with-lines">
+      <div class="code-header">
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="filename">service/MatriculaAlunoService.java</span><span class="lang-badge java">Java</span></div>
+      </div>
+      <pre>
+<span class="pkg">package br.com.alunoonline.api.service;</span>
+
+<span class="pkg">import br.com.alunoonline.api.dtos.AtualizarNotasRequestDTO;</span>
+<span class="pkg">import br.com.alunoonline.api.dtos.DisciplinasAlunoResponseDTO;</span>
+<span class="pkg">import br.com.alunoonline.api.dtos.HistoricoAlunoResponseDTO;</span>
+<span class="pkg">import br.com.alunoonline.api.enums.MatriculaAlunoStatusEnum;</span>
+<span class="pkg">import br.com.alunoonline.api.model.Aluno;</span>
+<span class="pkg">import br.com.alunoonline.api.model.MatriculaAluno;</span>
+<span class="pkg">import br.com.alunoonline.api.repository.MatriculaAlunoRepository;</span>
+<span class="pkg">import org.springframework.beans.factory.annotation.Autowired;</span>
+<span class="pkg">import org.springframework.http.HttpStatus;</span>
+<span class="pkg">import org.springframework.stereotype.Service;</span>
+<span class="pkg">import org.springframework.web.server.ResponseStatusException;</span>
+<span class="pkg">import java.util.ArrayList;</span>
+<span class="pkg">import java.util.List;</span>
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="tp">MatriculaAlunoService</span> {
+
+    <span class="kw">private static final</span> <span class="tp">Double</span> <span class="nb">MEDIA_PARA_APROVACAO</span> = <span class="num">7.0</span>;
+
+    <span class="an">@Autowired</span>
+    <span class="tp">MatriculaAlunoRepository</span> matriculaAlunoRepository;
+
+    <span class="kw">public void</span> <span class="fn">criarMatricula</span>(<span class="tp">MatriculaAluno</span> matriculaAluno) {
+        matriculaAluno.<span class="fn">setStatus</span>(<span class="tp">MatriculaAlunoStatusEnum</span>.<span class="nb">MATRICULADO</span>);
+        matriculaAlunoRepository.<span class="fn">save</span>(matriculaAluno);
+    }
+
+    <span class="kw">public void</span> <span class="fn">trancarMatricula</span>(<span class="tp">Long</span> id) {
+        <span class="tp">MatriculaAluno</span> matricula = matriculaAlunoRepository.<span class="fn">findById</span>(id)
+            .<span class="fn">orElseThrow</span>(() -&gt; <span class="kw">new</span> <span class="tp">ResponseStatusException</span>(
+                <span class="tp">HttpStatus</span>.<span class="nb">NOT_FOUND</span>, <span class="st">"Matricula não encontrada"</span>));
+
+        <span class="kw">if</span> (matricula.<span class="fn">getStatus</span>().<span class="fn">equals</span>(<span class="tp">MatriculaAlunoStatusEnum</span>.<span class="nb">MATRICULADO</span>)) {
+            matricula.<span class="fn">setStatus</span>(<span class="tp">MatriculaAlunoStatusEnum</span>.<span class="nb">TRANCADO</span>);
+            matriculaAlunoRepository.<span class="fn">save</span>(matricula);
+        } <span class="kw">else</span> {
+            <span class="kw">throw new</span> <span class="tp">ResponseStatusException</span>(<span class="tp">HttpStatus</span>.<span class="nb">BAD_REQUEST</span>,
+                <span class="st">"Só é possível trancar com status MATRICULADO"</span>);
+        }
+    }
+
+    <span class="kw">public void</span> <span class="fn">atualizarNotas</span>(<span class="tp">Long</span> id, <span class="tp">AtualizarNotasRequestDTO</span> dto) {
+        <span class="tp">MatriculaAluno</span> matricula = matriculaAlunoRepository.<span class="fn">findById</span>(id)
+            .<span class="fn">orElseThrow</span>(() -&gt; <span class="kw">new</span> <span class="tp">ResponseStatusException</span>(
+                <span class="tp">HttpStatus</span>.<span class="nb">NOT_FOUND</span>, <span class="st">"Matricula não encontrada"</span>));
+
+        <span class="kw">if</span> (dto.<span class="fn">getNota1</span>() != <span class="kw">null</span>) matricula.<span class="fn">setNota1</span>(dto.<span class="fn">getNota1</span>());
+        <span class="kw">if</span> (dto.<span class="fn">getNota2</span>() != <span class="kw">null</span>) matricula.<span class="fn">setNota2</span>(dto.<span class="fn">getNota2</span>());
+
+        <span class="kw">if</span> (matricula.<span class="fn">getNota1</span>() != <span class="kw">null</span> &amp;&amp; matricula.<span class="fn">getNota2</span>() != <span class="kw">null</span>) {
+            <span class="tp">Double</span> media = (matricula.<span class="fn">getNota1</span>() + matricula.<span class="fn">getNota2</span>()) / <span class="num">2</span>;
+            matricula.<span class="fn">setStatus</span>(media &gt;= <span class="nb">MEDIA_PARA_APROVACAO</span>
+                ? <span class="tp">MatriculaAlunoStatusEnum</span>.<span class="nb">APROVADO</span>
+                : <span class="tp">MatriculaAlunoStatusEnum</span>.<span class="nb">REPROVADO</span>);
+        }
+
+        matriculaAlunoRepository.<span class="fn">save</span>(matricula);
+    }
+
+    <span class="kw">public</span> <span class="tp">HistoricoAlunoResponseDTO</span> <span class="fn">emitirHistorico</span>(<span class="tp">Long</span> alunoId) {
+        <span class="tp">List</span>&lt;<span class="tp">MatriculaAluno</span>&gt; matriculas =
+            matriculaAlunoRepository.<span class="fn">findByAlunoId</span>(alunoId);
+
+        <span class="kw">if</span> (matriculas.<span class="fn">isEmpty</span>()) {
+            <span class="kw">throw new</span> <span class="tp">ResponseStatusException</span>(<span class="tp">HttpStatus</span>.<span class="nb">NOT_FOUND</span>,
+                <span class="st">"Nenhuma matrícula encontrada para esse aluno"</span>);
+        }
+
+        <span class="tp">Aluno</span> aluno = matriculas.<span class="fn">get</span>(<span class="num">0</span>).<span class="fn">getAluno</span>();
+        <span class="tp">List</span>&lt;<span class="tp">DisciplinasAlunoResponseDTO</span>&gt; disciplinas = <span class="kw">new</span> <span class="tp">ArrayList</span>&lt;&gt;();
+
+        <span class="kw">for</span> (<span class="tp">MatriculaAluno</span> matricula : matriculas) {
+            <span class="tp">DisciplinasAlunoResponseDTO</span> disc = <span class="kw">new</span> <span class="tp">DisciplinasAlunoResponseDTO</span>();
+            disc.<span class="fn">setNomeDisciplina</span>(matricula.<span class="fn">getDisciplina</span>().<span class="fn">getNome</span>());
+            disc.<span class="fn">setNomeProfessor</span>(matricula.<span class="fn">getDisciplina</span>().<span class="fn">getProfessor</span>().<span class="fn">getNome</span>());
+            disc.<span class="fn">setNota1</span>(matricula.<span class="fn">getNota1</span>());
+            disc.<span class="fn">setNota2</span>(matricula.<span class="fn">getNota2</span>());
+            <span class="kw">if</span> (matricula.<span class="fn">getNota1</span>() != <span class="kw">null</span> &amp;&amp; matricula.<span class="fn">getNota2</span>() != <span class="kw">null</span>) {
+                disc.<span class="fn">setMedia</span>((matricula.<span class="fn">getNota1</span>() + matricula.<span class="fn">getNota2</span>()) / <span class="num">2</span>);
+            }
+            disc.<span class="fn">setStatus</span>(matricula.<span class="fn">getStatus</span>());
+            disciplinas.<span class="fn">add</span>(disc);
+        }
+
+        <span class="tp">HistoricoAlunoResponseDTO</span> historico = <span class="kw">new</span> <span class="tp">HistoricoAlunoResponseDTO</span>();
+        historico.<span class="fn">setNomeAluno</span>(aluno.<span class="fn">getNome</span>());
+        historico.<span class="fn">setEmailAluno</span>(aluno.<span class="fn">getEmail</span>());
+        historico.<span class="fn">setCpfAluno</span>(aluno.<span class="fn">getCpf</span>());
+        historico.<span class="fn">setDisciplinas</span>(disciplinas);
+        <span class="kw">return</span> historico;
+    }
+}</pre>
     </div>
 
+    <h4 style="color:var(--accent);margin:28px 0 10px">🎮 MatriculaAlunoController.java (completo)</h4>
     <div class="code-block with-lines">
       <div class="code-header">
         <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
         <div style="display:flex;align-items:center;gap:8px"><span class="filename">controller/MatriculaAlunoController.java</span><span class="lang-badge java">Java</span></div>
       </div>
-      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30<br>31<br>32<br>33<br>34<br>35<br>36</div>
       <pre>
 <span class="pkg">package br.com.alunoonline.api.controller;</span>
 
-<span class="pkg">import br.com.alunoonline.api.dtos.*;</span>
+<span class="pkg">import br.com.alunoonline.api.dtos.AtualizarNotasRequestDTO;</span>
+<span class="pkg">import br.com.alunoonline.api.dtos.HistoricoAlunoResponseDTO;</span>
 <span class="pkg">import br.com.alunoonline.api.model.MatriculaAluno;</span>
 <span class="pkg">import br.com.alunoonline.api.service.MatriculaAlunoService;</span>
 <span class="pkg">import org.springframework.beans.factory.annotation.Autowired;</span>
@@ -2127,7 +2728,7 @@ br.com.alunoonline.api/
         matriculaAlunoService.<span class="fn">criarMatricula</span>(m);
     }
 
-    <span class="an">@PatchMapping</span>(<span class="st">"/trancar/{id}"</span>)        <span class="cm">// PATCH (parcial!)</span>
+    <span class="an">@PatchMapping</span>(<span class="st">"/trancar/{id}"</span>)
     <span class="an">@ResponseStatus</span>(<span class="tp">HttpStatus</span>.<span class="nb">NO_CONTENT</span>)
     <span class="kw">public void</span> <span class="fn">trancarMatricula</span>(<span class="an">@PathVariable</span> <span class="tp">Long</span> id) {
         matriculaAlunoService.<span class="fn">trancarMatricula</span>(id);
@@ -2185,169 +2786,6 @@ br.com.alunoonline.api/
       <div class="demo-body" id="fullDemoBody" style="min-height:350px">
         <div style="color:var(--text-dim);font-style:italic">Clique em "Rodar Simulação Completa" para ver todo o fluxo...</div>
       </div>
-    </div>
-  </div>
-</section>
-
-
-<!-- ╔══════════════════════════════════════════════════════════════╗ -->
-<!-- ║                    CAPÍTULO 5: DTOs                         ║ -->
-<!-- ╚══════════════════════════════════════════════════════════════╝ -->
-
-<div class="chapter-divider" id="cap-dto">
-  <span class="chapter-icon">📦</span>
-  <div class="chapter-number">Capítulo 5</div>
-  <h2 class="grad-dto">DTOs — Data Transfer Objects</h2>
-  <p class="chapter-subtitle">Por que não usamos o Model diretamente? Entenda agora!</p>
-</div>
-
-<section class="step-section" id="dto-intro">
-  <div class="step-header">
-    <div class="step-number sn-green">5.1</div>
-    <div>
-      <div class="step-title">O que é DTO e por que usar?</div>
-      <div style="color:var(--text-dim);font-size:0.88rem">Agora que você já sabe Model, hora de evoluir!</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="concept">
-      <div class="concept-title">📦 DTO = Data Transfer Object</div>
-      <p>Um DTO é uma classe <strong style="color:var(--text)">simples</strong> que serve apenas para <strong>transportar dados</strong> entre camadas. Diferente do Model (que representa a tabela), o DTO representa <strong>o que o cliente envia ou recebe</strong>.</p>
-    </div>
-
-    <div class="analogy">
-      <div class="analogy-title">Por que não usar o Model direto?</div>
-      <p style="color:var(--text-dim)">Imagine que a tabela <code>aluno</code> tem 20 campos, mas para atualizar as notas você só precisa de <strong style="color:var(--text)">2 campos (nota1 e nota2)</strong>. Faz sentido obrigar o cliente a enviar todos os 20? Não! O DTO permite enviar <strong>só o necessário</strong>. É como preencher apenas os campos relevantes de um formulário, em vez de um formulário gigante.</p>
-    </div>
-
-    <div class="tip">
-      <span class="tip-icon">💡</span>
-      <div class="tip-content"><strong>Quando começamos a usar DTOs neste projeto?</strong> Só aqui no Capítulo 5! Primeiro aprendemos com o Model direto para entender bem, e agora evoluímos para DTOs. É mais fácil assim!</div>
-    </div>
-  </div>
-</section>
-
-<div class="section-connector"><div class="line"></div></div>
-
-<section class="step-section" id="dto-code">
-  <div class="step-header">
-    <div class="step-number sn-blue">5.2</div>
-    <div>
-      <div class="step-title">Os DTOs do Projeto</div>
-      <div style="color:var(--text-dim);font-size:0.88rem">Request DTO vs Response DTO</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h4 style="color:var(--accent5);margin-bottom:12px">📥 AtualizarNotasRequestDTO — o que o cliente ENVIA</h4>
-    <div class="code-block with-lines">
-      <div class="code-header">
-        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-        <div style="display:flex;align-items:center;gap:8px"><span class="filename">dtos/AtualizarNotasRequestDTO.java</span><span class="lang-badge java">Java</span></div>
-      </div>
-      <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8</div>
-      <pre>
-<span class="pkg">package br.com.alunoonline.api.dtos;</span>
-
-<span class="pkg">import lombok.Data;</span>
-
-<span class="an">@Data</span>
-<span class="kw">public class</span> <span class="tp">AtualizarNotasRequestDTO</span> {
-    <span class="kw">private</span> <span class="tp">Double</span> nota1;
-    <span class="kw">private</span> <span class="tp">Double</span> nota2;
-}</pre>
-    </div>
-
-    <div class="tip">
-      <span class="tip-icon">💡</span>
-      <div class="tip-content">Percebe a diferença? O Model <code>MatriculaAluno</code> tem id, aluno, disciplina, nota1, nota2 e status. Mas para atualizar notas, o cliente só precisa enviar <strong>nota1</strong> e <strong>nota2</strong>!</div>
-    </div>
-
-    <h4 style="color:var(--accent4);margin:28px 0 12px">📤 HistoricoAlunoResponseDTO — o que a API DEVOLVE</h4>
-    <div class="code-block">
-      <div class="code-header">
-        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-        <div style="display:flex;align-items:center;gap:8px"><span class="filename">dtos/HistoricoAlunoResponseDTO.java</span><span class="lang-badge java">Java</span></div>
-      </div>
-      <pre>
-<span class="an">@Data</span>
-<span class="kw">public class</span> <span class="tp">HistoricoAlunoResponseDTO</span> {
-    <span class="kw">private</span> <span class="tp">String</span> nomeAluno;
-    <span class="kw">private</span> <span class="tp">String</span> emailAluno;
-    <span class="kw">private</span> <span class="tp">String</span> cpfAluno;
-    <span class="kw">private</span> <span class="tp">List</span>&lt;<span class="tp">DisciplinasAlunoResponseDTO</span>&gt; disciplinas;
-}</pre>
-    </div>
-
-    <div class="code-block">
-      <div class="code-header">
-        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-        <div style="display:flex;align-items:center;gap:8px"><span class="filename">dtos/DisciplinasAlunoResponseDTO.java</span><span class="lang-badge java">Java</span></div>
-      </div>
-      <pre>
-<span class="an">@Data</span>
-<span class="kw">public class</span> <span class="tp">DisciplinasAlunoResponseDTO</span> {
-    <span class="kw">private</span> <span class="tp">String</span> nomeDisciplina;
-    <span class="kw">private</span> <span class="tp">String</span> nomeProfessor;
-    <span class="kw">private</span> <span class="tp">Double</span> nota1;
-    <span class="kw">private</span> <span class="tp">Double</span> nota2;
-    <span class="kw">private</span> <span class="tp">Double</span> media;
-    <span class="kw">private</span> <span class="tp">MatriculaAlunoStatusEnum</span> status;
-}</pre>
-    </div>
-  </div>
-</section>
-
-<div class="section-connector"><div class="line"></div></div>
-
-<!-- DTO: HISTORICO DEMO -->
-<section class="step-section" id="dto-historico">
-  <div class="step-header">
-    <div class="step-number sn-yellow">5.3</div>
-    <div>
-      <div class="step-title">Histórico Acadêmico — JSON de Resposta</div>
-      <div style="color:var(--text-dim);font-size:0.88rem">Veja o JSON que a API retorna ao emitir o histórico</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <p style="color:var(--text-dim);margin-bottom:16px">Ao fazer <span class="method-badge get">GET</span> <code>/matriculas/emitir-historico/1</code>, a API retorna:</p>
-
-    <div class="code-block">
-      <div class="code-header">
-        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-        <div style="display:flex;align-items:center;gap:8px"><span class="filename">Resposta JSON — 200 OK</span><span class="lang-badge json">JSON</span></div>
-      </div>
-      <pre>
-{
-  <span class="fn">"nomeAluno"</span>: <span class="st">"Maria Silva"</span>,
-  <span class="fn">"emailAluno"</span>: <span class="st">"maria@email.com"</span>,
-  <span class="fn">"cpfAluno"</span>: <span class="st">"111.222.333-44"</span>,
-  <span class="fn">"disciplinas"</span>: [
-    {
-      <span class="fn">"nomeDisciplina"</span>: <span class="st">"Backend com Spring Boot"</span>,
-      <span class="fn">"nomeProfessor"</span>: <span class="st">"Prof. Carlos"</span>,
-      <span class="fn">"nota1"</span>: <span class="num">8.0</span>,
-      <span class="fn">"nota2"</span>: <span class="num">7.5</span>,
-      <span class="fn">"media"</span>: <span class="num">7.75</span>,
-      <span class="fn">"status"</span>: <span class="st">"APROVADO"</span> <span class="cm">✅</span>
-    },
-    {
-      <span class="fn">"nomeDisciplina"</span>: <span class="st">"Frontend com React"</span>,
-      <span class="fn">"nomeProfessor"</span>: <span class="st">"Profa. Ana"</span>,
-      <span class="fn">"nota1"</span>: <span class="num">5.0</span>,
-      <span class="fn">"nota2"</span>: <span class="num">4.0</span>,
-      <span class="fn">"media"</span>: <span class="num">4.5</span>,
-      <span class="fn">"status"</span>: <span class="st">"REPROVADO"</span> <span class="cm">❌</span>
-    }
-  ]
-}</pre>
-    </div>
-
-    <div class="analogy">
-      <div class="analogy-title">DTO montou tudo bonito!</div>
-      <p style="color:var(--text-dim)">Sem DTOs, a API retornaria todos os IDs, objetos aninhados com dados desnecessários. O DTO <strong style="color:var(--text)">formata os dados exatamente como o cliente precisa</strong> — nomes em vez de IDs, média calculada, sem informações internas.</p>
     </div>
   </div>
 </section>
